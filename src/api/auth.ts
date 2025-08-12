@@ -38,7 +38,8 @@ export type LoginResult = {
   token: string;
 };
 
-const BASE_URL = 'http://localhost:8080';
+// 변경: 개발 API 서버 도메인으로 전송
+const BASE_URL = 'https://dev-api.solicare.kro.kr';
 
 async function postJson<T>(path: string, body: unknown): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
