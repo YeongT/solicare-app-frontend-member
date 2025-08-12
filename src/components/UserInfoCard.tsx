@@ -9,20 +9,22 @@ const UserInfoCard: React.FC = () => {
 
   React.useEffect(() => {
     const updateHeight = () => {
-      if (infoRef.current) {
-        const h = infoRef.current.getBoundingClientRect().height;
-        // 사진은 정사각형으로 유지하되, 최대 230px, 최소 90px로 제한
-        const clamped = Math.max(90, Math.min(230, Math.round(h)));
-        setPhotoHeight(clamped);
-      }
+      const node = infoRef.current;
+      if (!node) return;
+      const h = node.getBoundingClientRect().height;
+      const clamped = Math.max(90, Math.min(230, Math.round(h)));
+      setPhotoHeight(clamped);
     };
 
     updateHeight();
     const ro = new ResizeObserver(updateHeight);
-    if (infoRef.current) ro.observe(infoRef.current);
+    const node = infoRef.current; // cleanup에서 사용할 고정 참조
+    if (node) ro.observe(node);
+
     window.addEventListener('resize', updateHeight);
     return () => {
-      if (infoRef.current) ro.disconnect();
+      if (node) ro.unobserve(node);
+      ro.disconnect();
       window.removeEventListener('resize', updateHeight);
     };
   }, []);
