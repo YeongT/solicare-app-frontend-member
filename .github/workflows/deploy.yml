@@ -43,7 +43,7 @@ jobs:
       - name: Add npm global bin to PATH
         shell: bash
         run: |
-          echo "export PATH=$(npm bin -g):$PATH" >> $GITHUB_ENV
+          echo "PATH=$(npm bin -g):$PATH" >> $GITHUB_ENV
           export PATH=$(npm bin -g):$PATH
           which yarn
           yarn --version
