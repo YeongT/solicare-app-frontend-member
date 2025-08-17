@@ -31,16 +31,6 @@ jobs:
               required_contexts: []
             });
             core.setOutput('deployment_id', deployment.data.id)
-      - name: Add yarn to PATH (nvm, dynamic)
-        shell: bash
-        run: |
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-          nvm use
-          echo "export PATH=\"$(nvm which current | xargs dirname):$PATH\"" >> $GITHUB_ENV
-          export PATH="$(nvm which current | xargs dirname):$PATH"
-          which yarn
-          yarn --version
       - name: Cache Yarn dependencies
         uses: actions/cache@v4
         with:
