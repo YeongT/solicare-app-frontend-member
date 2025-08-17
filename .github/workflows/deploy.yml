@@ -1,4 +1,4 @@
-name: Deploy React App to Lightsail Instance
+name: Deploy to lightsail instance
 
 on:
   push:
@@ -79,7 +79,7 @@ jobs:
               deployment_id: ${{ steps.deployment.outputs.deployment_id }},
               state: 'success',
               environment_url: 'https://solicare.kro.kr',
-              log_url: 'https://github.com/Solicare/solicare-app-frontend/actions/runs/${{ github.run_id }}'
+              log_url: 'https://github.com/Solicare/solicare-app-frontend/actions/runs/${{ github.run_id }}#step:~:text=Build+(yarn)'
             })
 
       # Deployment status update (failure)
