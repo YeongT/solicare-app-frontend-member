@@ -40,6 +40,13 @@ jobs:
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             yarn-${{ runner.os }}-
+      - name: Add npm global bin to PATH
+        shell: bash
+        run: |
+          echo "export PATH=$(npm bin -g):$PATH" >> $GITHUB_ENV
+          export PATH=$(npm bin -g):$PATH
+          which yarn
+          yarn --version
       - name: Install dependencies (yarn)
         shell: bash
         run: yarn install --frozen-lockfile
