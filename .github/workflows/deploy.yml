@@ -112,14 +112,12 @@ jobs:
           path: build
       - name: Install pm2 and serve
         run: yarn global add pm2 serve
-      - name: Stop previous app (ignore error if not running)
-        run: |
-          pm2 delete solicare-frontend || true
       - name: Start app with pm2
         run: |
-          pm2 start npx --name solicare-frontend -- serve -s build -l 3000
+          npx pm2 delete solicare-frontend || true
+          npx pm2 start npx --name solicare-frontend -- serve -s build -l 3000
       - name: Show pm2 status
-        run: pm2 status
+        run: npx pm2 status
       - name: Deployment Status Success
         if: success() && needs.build.result == 'success' && needs.test.result == 'success'
         uses: actions/github-script@v7
@@ -131,7 +129,7 @@ jobs:
               deployment_id: ${{ needs.build.outputs.deployment_id }},
               state: 'success',
               environment_url: 'https://www.solicare.kro.kr',
-              log_url: 'https://github.com/Solicare/solicare-app-frontend/actions/runs/${{ github.run_id }}'
+              log_url: `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}`
             })
       - name: Deployment Status Failure
         if: failure() || needs.build.result == 'failure' || needs.test.result == 'failure'
@@ -143,5 +141,5 @@ jobs:
               repo: context.repo.repo,
               deployment_id: ${{ needs.build.outputs.deployment_id }},
               state: 'failure',
-              log_url: 'https://github.com/Solicare/solicare-app-frontend/actions/runs/${{ github.run_id }}'
+              log_url: `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}`
             })
