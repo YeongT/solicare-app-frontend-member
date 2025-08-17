@@ -1,56 +1,107 @@
-import React from 'react';
-import './HealthMetricsCard.css';
+import React, { useEffect, useState } from "react";
+import {
+  LineChart,
+  Line,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts";
+import "./HealthMetricsCard.css";
+
+const MAX_POINTS = 60; // 10분 데이터 10초 단위
+const INTERVAL = 10000; // 10초 단위
 
 const HealthMetricsCard: React.FC = () => {
+  const [heartData, setHeartData] = useState<{ time: string; bpm: number }[]>([]);
+  const [tempData, setTempData] = useState<{ time: string; temp: number }[]>([]);
+  const [currentTime, setCurrentTime] = useState<string>(new Date().toLocaleTimeString());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const timeLabel = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
+      const newHeart = { time: timeLabel, bpm: 60 + Math.floor(Math.random() * 40) };
+      const newTemp = { time: timeLabel, temp: parseFloat((36 + Math.random() * 1.5).toFixed(1)) };
+
+      // 새 데이터가 왼쪽, 최대 MAX_POINTS 유지
+      setHeartData(prev => [newHeart, ...prev.slice(0, MAX_POINTS - 1)]);
+      setTempData(prev => [newTemp, ...prev.slice(0, MAX_POINTS - 1)]);
+      setCurrentTime(timeLabel);
+    }, INTERVAL);  
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="health-metrics-card">
       <div className="metrics-container">
+
+        {/* ❤️ 심박수 */}
         <div className="metric-item">
           <div className="metric-header">
             <span className="metric-icon">❤️</span>
-            <span className="metric-title">심박수 77 bpm</span>
+            <span className="metric-title">
+              심박수 {heartData.length ? heartData[0]?.bpm : "--"} bpm
+            </span>
           </div>
           <div className="metric-graph">
-            <svg className="heart-rate-graph" viewBox="0 0 200 60" preserveAspectRatio="none">
-              <path
-                d="M0,30 Q20,10 40,30 T80,30 T120,30 T160,30 T200,30"
-                stroke="#ff4444"
-                strokeWidth="2"
-                fill="none"
-              />
-            </svg>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={heartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="time" hide={true} axisLine={false} tick={false} />
+                <YAxis domain={[0, 180]} label={{ value: "BPM", angle: -90, position: "insideLeft" }} />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="bpm"
+                  stroke="#ff4444"
+                  dot={false}
+                  strokeWidth={2}
+                  isAnimationActive={true}
+                  animationDuration={0}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
-        
+
+        {/* 🌡️ 체온 */}
         <div className="metric-item">
           <div className="metric-header">
             <span className="metric-icon">🌡️</span>
-            <span className="metric-title">체온 36.7 도</span>
+            <span className="metric-title">
+              체온 {tempData.length ? tempData[0]?.temp.toFixed(1) : "--"} °C
+            </span>
           </div>
           <div className="metric-graph">
-            <svg className="temperature-graph" viewBox="0 0 200 60" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="tempGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" style={{stopColor: '#ff4444', stopOpacity: 0.3}} />
-                  <stop offset="100%" style={{stopColor: '#ff4444', stopOpacity: 0.1}} />
-                </linearGradient>
-              </defs>
-              <path
-                d="M0,40 Q50,35 100,30 T200,25"
-                stroke="#ff4444"
-                strokeWidth="2"
-                fill="url(#tempGradient)"
-              />
-              <text x="10" y="15" fontSize="8" fill="#666">36.5</text>
-              <text x="180" y="55" fontSize="8" fill="#666">시간</text>
-            </svg>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={tempData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="time" hide /> {/* X축 숨김 */}
+                <YAxis domain={[35, 39]} label={{ value: "°C", angle: -90, position: "insideLeft" }} />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="temp"
+                  stroke="#ff8844"
+                  dot={false}
+                  strokeWidth={2}
+                  isAnimationActive={true}
+                  animationDuration={0}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
+
       </div>
+
+     
     </div>
   );
 };
 
 export default HealthMetricsCard;
-
-
