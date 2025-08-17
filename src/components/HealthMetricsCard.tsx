@@ -16,7 +16,7 @@ const INTERVAL = 10000; // 10초 단위
 const HealthMetricsCard: React.FC = () => {
   const [heartData, setHeartData] = useState<{ time: string; bpm: number }[]>([]);
   const [tempData, setTempData] = useState<{ time: string; temp: number }[]>([]);
-  const [currentTime, setCurrentTime] = useState<string>(new Date().toLocaleTimeString());
+  // const [currentTime, setCurrentTime] = useState<string>(new Date().toLocaleTimeString());
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -29,7 +29,7 @@ const HealthMetricsCard: React.FC = () => {
       // 새 데이터가 왼쪽, 최대 MAX_POINTS 유지
       setHeartData(prev => [newHeart, ...prev.slice(0, MAX_POINTS - 1)]);
       setTempData(prev => [newTemp, ...prev.slice(0, MAX_POINTS - 1)]);
-      setCurrentTime(timeLabel);
+      // setCurrentTime(timeLabel);
     }, INTERVAL);  
 
     return () => clearInterval(interval);
