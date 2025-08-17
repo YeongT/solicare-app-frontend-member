@@ -46,6 +46,35 @@ jobs:
           name: build
           path: build
 
+      # Deployment status update (success)
+      - name: Deployment Status Success
+        if: success() && steps.deployment.outputs.deployment_id != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: ${{ steps.deployment.outputs.deployment_id }},
+              state: 'success',
+              environment_url: 'https://solicare.kro.kr',
+              log_url: 'https://github.com/Solicare/solicare-app-frontend/actions/runs/${{ github.run_id }}'
+            })
+
+      # Deployment status update (failure)
+      - name: Deployment Status Failure
+        if: failure() && steps.deployment.outputs.deployment_id != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: ${{ steps.deployment.outputs.deployment_id }},
+              state: 'failure',
+              log_url: 'https://github.com/Solicare/solicare-app-frontend/actions/runs/${{ github.run_id }}'
+            })
+
   test:
     runs-on: self-hosted
     needs: build
