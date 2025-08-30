@@ -6,10 +6,11 @@ export type InfoFrameProps = {
   age: number;
   gender: string;
   address: string;
+  note?: string;
 };
 
 const InfoFrame = React.forwardRef<HTMLDivElement, InfoFrameProps>(
-  ({ name, age, gender, address }, ref) => {
+  ({ name, age, gender, address, note }, ref) => {
     return (
       <div ref={ref} className="info-frame">
         <div className="info-row">
@@ -27,6 +28,10 @@ const InfoFrame = React.forwardRef<HTMLDivElement, InfoFrameProps>(
         <div className="info-row">
           <span className="label">주소</span>
           <span className="value">{address}</span>
+        </div>
+        <div className="info-row">
+          <span className="label">비고</span>
+          <span className="value">{note}</span>
         </div>
       </div>
     );

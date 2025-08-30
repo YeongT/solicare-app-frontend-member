@@ -10,27 +10,49 @@ import {
 } from "recharts";
 import "./HealthMetricsCard.css";
 
-const MAX_POINTS = 60; // 10분 데이터 10초 단위
-const INTERVAL = 10000; // 10초 단위
+const INITIAL_POINTS = 10;   // 초기 데이터 개수
+const MAX_POINTS = 10;       // 그래프 최대 표시 포인트
+const UPDATE_INTERVAL = 60000; // 1분 단위
+
+interface HealthData {
+  time: string;
+  bpm: number;
+  temp: number;
+}
 
 const HealthMetricsCard: React.FC = () => {
-  const [heartData, setHeartData] = useState<{ time: string; bpm: number }[]>([]);
-  const [tempData, setTempData] = useState<{ time: string; temp: number }[]>([]);
-  // const [currentTime, setCurrentTime] = useState<string>(new Date().toLocaleTimeString());
+  const [data, setData] = useState<HealthData[]>([]);
 
+  // 초기 데이터 생성
+  useEffect(() => {
+    const initialData: HealthData[] = [];
+    const now = new Date();
+
+    for (let i = 0; i < INITIAL_POINTS; i++) {
+      const time = new Date(now.getTime() - i * UPDATE_INTERVAL);
+      initialData.push({
+        time: time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+        bpm: 60 + Math.floor(Math.random() * 40),
+        temp: parseFloat((36 + Math.random() * 1.5).toFixed(1)),
+      });
+    }
+
+    setData(initialData);
+  }, []);
+
+
+  // 1분마다 새 데이터 추가
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
-      const timeLabel = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      const newPoint: HealthData = {
+        time: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+        bpm: 60 + Math.floor(Math.random() * 40),
+        temp: parseFloat((36 + Math.random() * 1.5).toFixed(1)),
+      };
 
-      const newHeart = { time: timeLabel, bpm: 60 + Math.floor(Math.random() * 40) };
-      const newTemp = { time: timeLabel, temp: parseFloat((36 + Math.random() * 1.5).toFixed(1)) };
-
-      // 새 데이터가 왼쪽, 최대 MAX_POINTS 유지
-      setHeartData(prev => [newHeart, ...prev.slice(0, MAX_POINTS - 1)]);
-      setTempData(prev => [newTemp, ...prev.slice(0, MAX_POINTS - 1)]);
-      // setCurrentTime(timeLabel);
-    }, INTERVAL);  
+      setData(prev => [newPoint, ...prev].slice(0, MAX_POINTS));
+    }, UPDATE_INTERVAL);
 
     return () => clearInterval(interval);
   }, []);
@@ -44,14 +66,14 @@ const HealthMetricsCard: React.FC = () => {
           <div className="metric-header">
             <span className="metric-icon">❤️</span>
             <span className="metric-title">
-              심박수 {heartData.length ? heartData[0]?.bpm : "--"} bpm
+              심박수 {data.length ? data[0]?.bpm : "--"} bpm
             </span>
           </div>
           <div className="metric-graph">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={heartData}>
+              <LineChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" hide={true} axisLine={false} tick={false} />
+                <XAxis dataKey="time" hide axisLine={false} tick={false} />
                 <YAxis domain={[0, 180]} label={{ value: "BPM", angle: -90, position: "insideLeft" }} />
                 <Tooltip />
                 <Line
@@ -61,7 +83,7 @@ const HealthMetricsCard: React.FC = () => {
                   dot={false}
                   strokeWidth={2}
                   isAnimationActive={true}
-                  animationDuration={0}
+                  animationDuration={500}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -73,14 +95,14 @@ const HealthMetricsCard: React.FC = () => {
           <div className="metric-header">
             <span className="metric-icon">🌡️</span>
             <span className="metric-title">
-              체온 {tempData.length ? tempData[0]?.temp.toFixed(1) : "--"} °C
+              체온 {data.length ? data[0]?.temp.toFixed(1) : "--"} °C
             </span>
           </div>
           <div className="metric-graph">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={tempData}>
+              <LineChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" hide /> {/* X축 숨김 */}
+                <XAxis dataKey="time" hide axisLine={false} tick={false} />
                 <YAxis domain={[35, 39]} label={{ value: "°C", angle: -90, position: "insideLeft" }} />
                 <Tooltip />
                 <Line
@@ -90,7 +112,7 @@ const HealthMetricsCard: React.FC = () => {
                   dot={false}
                   strokeWidth={2}
                   isAnimationActive={true}
-                  animationDuration={0}
+                  animationDuration={500}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -98,8 +120,6 @@ const HealthMetricsCard: React.FC = () => {
         </div>
 
       </div>
-
-     
     </div>
   );
 };

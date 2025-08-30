@@ -96,6 +96,12 @@
   padding: 0.75rem 1rem;
   font-size: 1rem;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-submit:hover:not(:disabled) {
+  background: #374151;
+  transform: translateY(-1px);
 }
 
 .form-submit:disabled {
@@ -112,6 +118,11 @@
   color: #111827;
   font-weight: 600;
   text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.auth-link:hover {
+  color: #374151;
 }
 
 @media (max-width: 560px) {

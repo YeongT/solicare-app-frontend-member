@@ -1,7 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/landing.css';
 
 const Start: React.FC = () => {
+  const { isAuthenticated, userName } = useAuth();
+
   return (
     <main className="landing">
       <section className="landing-hero">
@@ -9,8 +13,16 @@ const Start: React.FC = () => {
         <h1 className="landing-title">가정 내 어르신을 위한 안전 모니터링</h1>
         <p className="landing-subtitle">심박수·체온·낙상 감지를 한 곳에서 확인하고, 이상 상황을 바로 알림으로 받아보세요.</p>
         <div className="landing-actions">
-          <a href="#/login" className="cta cta-primary">로그인</a>
-          <a href="#/signup" className="cta cta-secondary">회원가입</a>
+          {isAuthenticated ? (
+            <>
+              <Link to="/dashboard" className="cta cta-primary">대시보드로 이동</Link>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="cta cta-primary">로그인</Link>
+              <Link to="/signup" className="cta cta-secondary">회원가입</Link>
+            </>
+          )}
         </div>
       </section>
 

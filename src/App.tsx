@@ -1,43 +1,39 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
 import MainContent from './components/MainContent';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Start from './pages/Start';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-  const [route, setRoute] = React.useState(window.location.hash || '#/start');
-
-  React.useEffect(() => {
-    const onHashChange = () => setRoute(window.location.hash || '#/start');
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
-  }, []);
-
-  const isAuthed = Boolean(typeof window !== 'undefined' && localStorage.getItem('auth_token'));
-
-  const renderRoute = () => {
-    switch (route) {
-      case '#/start':
-      case '#/':
-        return <Start />;
-      case '#/login':
-        return <Login />;
-      case '#/signup':
-        return <Signup />;
-      case '#/dashboard':
-        return isAuthed ? <MainContent /> : <Login />;
-      default:
-        return <Start />;
-    }
-  };
-
   return (
-    <div className="App">
-      <Header />
-      {renderRoute()}
-    </div>
+    <Router>
+      <AuthProvider>
+        <div className="App">
+          <Header />
+          <Routes>
+            <Route path="/" element={<Navigate to="/start" replace />} />
+            <Route path="/start" element={<Start />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <MainContent />
+                </ProtectedRoute>
+              } 
+            />
+            {/* 404 페이지 - 존재하지 않는 경로는 시작 페이지로 리다이렉트 */}
+            <Route path="*" element={<Navigate to="/start" replace />} />
+          </Routes>
+        </div>
+      </AuthProvider>
+    </Router>
   );
 }
 
