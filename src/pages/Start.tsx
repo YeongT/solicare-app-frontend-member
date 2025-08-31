@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import '../styles/landing.css';
 
 const Start: React.FC = () => {
-  const { isAuthenticated, userName } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <main className="landing">

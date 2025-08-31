@@ -22,9 +22,9 @@ const SeniorModal: React.FC<Props> = ({ isOpen, onClose, onAdd }) => {
 
   const [form, setForm] = useState(initialState);
 
-  useEffect(() => {
-    if (!isOpen) setForm(initialState);
-  }, [isOpen]);
+    useEffect(() => {
+      if (!isOpen) setForm(initialState);
+    }, [isOpen, initialState]);
 
   // ESC 키로 닫기
   useEffect(() => {

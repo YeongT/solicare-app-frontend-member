@@ -18,11 +18,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [token, setToken] = useState<string | null>(getCookie('jwt'));
   const [userName, setUserName] = useState<string | null>(getCookie('name'));
 
-  useEffect(() => {
-    if (token && isTokenExpired(token)) {
-      logout();
-    }
-  }, []);
+
 
   const login = (newToken: string, name: string) => {
     setToken(newToken);
@@ -38,7 +34,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     deleteCookie('name'); // localStorage.removeItem('name');
     navigate('/login'); //window.location.href = '/login';
   };
-
+  useEffect(() => {
+    if (token && isTokenExpired(token)) {
+      logout();
+    }
+  }, [logout, token]);
   return (
     <AuthContext.Provider
       value={{
