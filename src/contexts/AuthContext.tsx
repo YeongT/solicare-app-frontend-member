@@ -18,22 +18,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [token, setToken] = useState<string | null>(getCookie('jwt'));
   const [userName, setUserName] = useState<string | null>(getCookie('name'));
 
-
-
-  const login = (newToken: string, name: string) => {
+  const login = React.useCallback((newToken: string, name: string) => {
     setToken(newToken);
     setUserName(name);
     setCookie('jwt', newToken, 1); // 하루 유효
     setCookie('name', name, 1); // localStorage.setItem('name', name);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = React.useCallback(() => {
     setToken(null);
     setUserName(null);
     deleteCookie('jwt');
     deleteCookie('name'); // localStorage.removeItem('name');
     navigate('/login'); //window.location.href = '/login';
-  };
+  }, [navigate]);
+
   useEffect(() => {
     if (token && isTokenExpired(token)) {
       logout();

@@ -9,7 +9,7 @@ interface Props {
 }
 
 const SeniorModal: React.FC<Props> = ({ isOpen, onClose, onAdd }) => {
-  const initialState: Omit<Senior, 'monitorUserUuid'> = {
+  const initialState = React.useMemo<Omit<Senior, 'monitorUserUuid'>>(() => ({
     name: "",
     userId: "",
     password: "",
@@ -18,7 +18,7 @@ const SeniorModal: React.FC<Props> = ({ isOpen, onClose, onAdd }) => {
     phoneNumber: "",
     address: "",
     note: "",
-  };
+  }), []);
 
   const [form, setForm] = useState(initialState);
 
