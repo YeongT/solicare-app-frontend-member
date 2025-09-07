@@ -11,11 +11,11 @@
       "id": "2",
       "name": "정은진",
       "email": "eunjin7254@naver.com",
-      "phoneNumber": "010-5473-7159",
+      "phoneNumber": "010-1234-5678",
       "password": "qwer1234"
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "정은지",
       "email": "eunjii@naver.com",
       "phoneNumber": "010-9876-5432",
@@ -99,6 +99,17 @@
       "phoneNumber": "010-1111-1111",
       "address": "전라남도 목포",
       "note": "고혈압"
+    },
+    {
+      "id": "fc39",
+      "name": "1234",
+      "userId": "1234",
+      "password": "1234",
+      "gender": "OTHER",
+      "age": 0,
+      "phoneNumber": "",
+      "address": "",
+      "note": ""
     }
   ]
 }

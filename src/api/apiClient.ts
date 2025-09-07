@@ -1,43 +1,56 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { getCookie, deleteCookie } from '../utils/cookies';
-import { isTokenExpired } from '../utils/jwt';
-import { InternalAxiosRequestConfig } from 'axios';
+import { ApiResponse } from '../types/api';
 
-const BASE_URL = 'https://dev-api.solicare.kro.kr/api/member';
 
-const apiClient = axios.create({
+const BASE_URL = process.env.REACT_APP_BASE_API_URL || 'https://dev-api.solicare.kro.kr/api';
+
+export const apiClient = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true,
+  // withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// 요청 인터셉터
-apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = getCookie('jwt');
-  if (token) {
-    if (isTokenExpired(token)) {
-      deleteCookie('jwt');
-      window.location.href = '/login';
-      return Promise.reject('Token expired');
-    }
-    config.headers['Authorization'] = `Bearer ${token}`;
-  }
-  return config;
-});
 
-// 401 처리 - 회원가입/로그인 요청은 제외
-apiClient.interceptors.response.use(
-  res => res,
-  err => {
-    if (err.response?.status === 401) {
-      // 회원가입이나 로그인 요청이 아닌 경우에만 로그인 페이지로 리다이렉트
-      const isAuthRequest = err.config?.url?.includes('/member/join') || err.config?.url?.includes('/member/login');
-      if (!isAuthRequest) {
-        deleteCookie('jwt');
-        window.location.href = '/login';
-      }
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = getCookie('accessToken');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
-    return Promise.reject(err);
-  }
+    return config;
+  },
+  (error) => Promise.reject(error)
 );
 
-export default apiClient;
+apiClient.interceptors.response.use(
+  (response) => {
+    if (response.data.isSuccess) {
+      return response.data.body ?? null; // body가 없으면 null 반환
+    }
+    if(response.data.errors){
+      console.error('API 오류:', response.data.errors);
+    }
+    // 서버 실패 응답을 Error 객체로 throw
+    const error = new Error(response.data.message || '알 수 없는 오류가 발생했습니다.');
+    (error as any).code = response.data.code;
+    return Promise.reject(error);
+  },
+  (error) => {
+    if (error.response?.status === 401) {
+      alert('인증이 만료되었습니다. 다시 로그인해주세요.');
+      deleteCookie('accessToken');
+      deleteCookie('userName');
+      window.location.href = '/login';
+    }
+    // 서버에서 온 message가 있으면 그대로 Error로 throw
+    if (error.response?.data?.message) {
+      const err = new Error(error.response.data.message);
+      (err as any).code = error.response.data.code;
+      return Promise.reject(err);
+    }
+    return Promise.reject(error);
+  }
+);

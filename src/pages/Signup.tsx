@@ -2,21 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/auth.css';
 import { useAuth } from '../contexts/AuthContext';
-// import { signUpApi } from '../api/auth';
-import { mockSignUpApi as signUpApi } from '../api/mockAuth';
+import { JoinRequestBody } from '../types/api'; // 1. 회원가입 요청 타입을 import 합니다.
 
 
-// import { joinMember, JoinRequest } from '../api/auth';
-
-
-interface JoinRequest {
-  name: string;
-  email: string;
-  phoneNumber: string;
-  password: string;
-};
-
-const initialState: JoinRequest = {
+const initialState: JoinRequestBody = {
   name: '',
   email: '',
   phoneNumber: '',
@@ -45,12 +34,12 @@ const validateEmail = (email: string): boolean => {
 };
 
 const Signup: React.FC = () => {
-  const [form, setForm] = useState<JoinRequest>(initialState);
+  const [form, setForm] = useState<JoinRequestBody>(initialState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
-  const { login } = useAuth();
+  const { signup } = useAuth();
   const navigate = useNavigate();
 
 
@@ -94,26 +83,22 @@ const Signup: React.FC = () => {
     setSuccess(null);
 
     try {
-      const data = await signUpApi(form.name, form.email, form.phoneNumber, form.password);
-      
-      if (data.isSuccess && data.result) {
+      const isSignupSuccess = await signup(form);
+
+      if (isSignupSuccess) {
         // 회원가입 성공 시에만 로그인 처리 및 대시보드로 이동
-        login(data.result.token, form.name);
         navigate('/dashboard');
-      } else {
-        // 회원가입 실패 시 에러 메시지 표시하고 폼 초기화
-        setError(data.message || '회원가입에 실패했습니다.');
-        setForm(initialState);
-        setEmailError(null);
-        // 1초 후 에러 메시지 자동 제거
-        setTimeout(() => setError(null), 1000);
       }
     } catch (err: any) {
-      setError('서버 오류가 발생했습니다. 다시 시도해주세요.');
+      if (err instanceof Error) {
+        setError(err.message || '회원가입에 실패했습니다.');
+      } else {
+        setError('알 수 없는 오류가 발생했습니다.');
+      }
       setForm(initialState);
       setEmailError(null);
-      // 1초 후 에러 메시지 자동 제거
-      setTimeout(() => setError(null), 1000);
+      // 3초 후 에러 메시지 자동 제거
+      setTimeout(() => setError(null), 3000);
     } finally {
       setLoading(false);
     }

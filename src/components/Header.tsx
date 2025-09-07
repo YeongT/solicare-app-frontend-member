@@ -4,7 +4,7 @@ import './Header.css';
 import { useAuth } from '../contexts/AuthContext';
 
 const Header: React.FC = () => {
-  const { isAuthenticated, logout, userName } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -48,7 +48,7 @@ const Header: React.FC = () => {
                 className="user-button"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                {userName}님
+                {user?.name}님
               </button>
               {isDropdownOpen && (
                 <div className="dropdown-menu">

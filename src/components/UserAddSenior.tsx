@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from "react";
 import "./UserAddSenior.css";
 import { Senior } from "../types/senior";
+import { SeniorJoinRequestBody } from '../types/api';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (data: Omit<Senior, 'monitorUserUuid'>) => void;
+  onAdd: (data: SeniorJoinRequestBody) => void;
 }
 
 const SeniorModal: React.FC<Props> = ({ isOpen, onClose, onAdd }) => {
-  const initialState = React.useMemo<Omit<Senior, 'monitorUserUuid'>>(() => ({
+  const initialState = React.useMemo<SeniorJoinRequestBody>(() => ({
     name: "",
     userId: "",
     password: "",
-    gender: "OTHER",
+    gender: "MALE",
     age: 0,
     phoneNumber: "",
     address: "",
@@ -60,14 +61,13 @@ const SeniorModal: React.FC<Props> = ({ isOpen, onClose, onAdd }) => {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-card" onClick={e => e.stopPropagation()}>
-        <h3 className="modal-title">사용자 추가</h3>
+        <h3 className="modal-title">신규 대상자 추가</h3>
         <input name="name" placeholder="이름" value={form.name} onChange={handleChange} />
         <input name="userId" placeholder="ID" value={form.userId} onChange={handleChange} />
         <input type="password" name="password" placeholder="PW" value={form.password} onChange={handleChange} />
         <select name="gender" value={form.gender} onChange={handleChange}>
           <option value="MALE">남성</option>
           <option value="FEMALE">여성</option>
-          <option value="OTHER">기타</option>
         </select>
         <input name="age" placeholder="나이" value={form.age} onChange={handleChange} />
         <input name="phoneNumber" placeholder="전화번호" value={form.phoneNumber} onChange={handleChange} />

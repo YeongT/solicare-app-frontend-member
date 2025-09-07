@@ -4,23 +4,9 @@ import '../styles/auth.css';
 import { useAuth } from '../contexts/AuthContext';
 // import apiClient from '../api/apiClient';
 // import { loginApi } from '../api/auth';
-import { mockLoginApi as loginApi } from '../api/mockAuth';
+// import { mockLoginApi as loginApi } from '../api/mockAuth';
+import { LoginRequestBody } from '../types/api'; // 1. 정의해둔 타입을 import 합니다.
 
-interface LoginForm {
-  email: string;
-  password: string;
-}
-
-/*
-interface LoginResponse {
-  isSuccess: boolean;
-  message?: string;
-  result: {
-    token: string;
-    name: string;
-  };
-}
-  */
 
 // 이메일 형식 검증 함수
 const validateEmail = (email: string): boolean => {
@@ -28,10 +14,10 @@ const validateEmail = (email: string): boolean => {
   return emailRegex.test(email);
 };
 
-const initialState: LoginForm = { email: '', password: '' };
+const initialState: LoginRequestBody = { email: '', password: '' };
 
 const Login: React.FC = () => {
-  const [form, setForm] = useState<LoginForm>(initialState);
+  const [form, setForm] = useState<LoginRequestBody>(initialState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -71,26 +57,21 @@ const Login: React.FC = () => {
     setError(null);
 
     try {
-      const data = await loginApi(form.email, form.password);
-      
-      if (data.isSuccess && data.result) {
+      const isLoginSuccess = await login(form);
+      if (isLoginSuccess) {
         // 로그인 성공 시 대시보드로 이동
-        login(data.result.token, data.result.name);
         navigate('/dashboard');
-      } else {
-        // 로그인 실패 시 에러 메시지 표시하고 폼 초기화
-        setError(data.message || '로그인에 실패했습니다.');
-        setForm(initialState);
-        setEmailError(null);
-        // 1초 후 에러 메시지 자동 제거
-        setTimeout(() => setError(null), 1000);
       }
     } catch (err: any) {
-      setError('서버 오류가 발생했습니다. 다시 시도해주세요.');
+      if (err instanceof Error) {
+        setError(err.message || '로그인에 실패했습니다.');
+      } else {
+        setError('알 수 없는 오류가 발생했습니다.');
+      }
       setForm(initialState);
       setEmailError(null);
-      // 1초 후 에러 메시지 자동 제거
-      setTimeout(() => setError(null), 1000);
+      // 3초 후 에러 메시지 자동 제거
+      setTimeout(() => setError(null), 3000);
     } finally {
       setLoading(false);
     }

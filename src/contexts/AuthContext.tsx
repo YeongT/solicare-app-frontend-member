@@ -1,60 +1,129 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getCookie, setCookie, deleteCookie } from '../utils/cookies';
-import { isTokenExpired } from '../utils/jwt';
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import { login as apiLogin, join as apiJoin } from '../api/member';
+import { LoginRequestBody, JoinRequestBody } from '../types/api';
+import { setCookie, getCookie, deleteCookie } from '../utils/cookies';
+import { getJwtExpiration, isTokenExpired, getJwtUuid } from '../utils/jwt';
 
 interface AuthContextType {
-  token: string | null;
-  userName: string | null;
-  login: (token: string, name: string) => void;
+  user: User | null;
+  login: (loginData: LoginRequestBody) => Promise<boolean>;
+  signup: (joinData: JoinRequestBody) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+interface User {
+  name: string;
+  uuid: string;
+}
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const navigate = useNavigate();
-  const [token, setToken] = useState<string | null>(getCookie('jwt'));
-  const [userName, setUserName] = useState<string | null>(getCookie('name'));
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
-  const login = React.useCallback((newToken: string, name: string) => {
-    setToken(newToken);
-    setUserName(name);
-    setCookie('jwt', newToken, 1); // 하루 유효
-    setCookie('name', name, 1); // localStorage.setItem('name', name);
-  }, []);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-  const logout = React.useCallback(() => {
-    setToken(null);
-    setUserName(null);
-    deleteCookie('jwt');
-    deleteCookie('name'); // localStorage.removeItem('name');
-    navigate('/login'); //window.location.href = '/login';
-  }, [navigate]);
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    if (token && isTokenExpired(token)) {
-      logout();
+    const token = getCookie('accessToken');
+    if (token && !isTokenExpired(token)) {
+      const uuid = getJwtUuid(token);
+      const name = getCookie('userName') || '사용자'; // 필요 시 프로필 조회 API로 실제 이름 가져오기
+      if (uuid) {
+        setUser({ name, uuid });
+      }
     }
-  }, [logout, token]);
-  return (
-    <AuthContext.Provider
-      value={{
-        token,
-        userName,
-        login,
-        logout,
-        isAuthenticated: !!token && !isTokenExpired(token),
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  }, []);
 
-export const useAuth = () => {
+  const login = async (loginData: LoginRequestBody): Promise<boolean> => {
+    try {
+      const responseBody = await apiLogin(loginData);
+      if (!responseBody) {
+        throw new Error('로그인 응답에 body가 없습니다.');
+      }
+      
+      const { token, name } = responseBody;
+      const uuid = getJwtUuid(token);
+      const expires = getJwtExpiration(token);
+      
+      setCookie('accessToken', token, expires);
+      setCookie('userName', name, expires);
+
+      if (uuid) {
+        setUser({ name, uuid });
+      } else {
+        setUser({ name, uuid: '' });
+      }
+      return true;
+
+    } catch (error) {
+      console.error('Context 로그인 실패:', error);
+      logout();
+      if (error instanceof Error) {
+        throw new Error(error.message || '로그인에 실패했습니다.');
+      }
+      throw new Error('로그인에 실패했습니다.');
+    }
+  };
+
+  const logout = (): void => {
+    deleteCookie('accessToken');
+    deleteCookie('userName');
+    setUser(null);
+  };
+
+
+
+  const signup = async (joinData: JoinRequestBody): Promise<boolean> => {
+    try {
+      const responseBody = await apiJoin(joinData);
+      if (!responseBody?.token) {
+        // 서버에서 온 message를 error로 throw (apiClient에서 message를 error로 넘김)
+        throw new Error('회원가입 응답에 토큰이 없습니다.');
+      }
+
+      const { token } = responseBody;
+      const uuid = getJwtUuid(token);
+      const expires = getJwtExpiration(token);
+
+      setCookie('accessToken', token, expires);
+      setCookie('userName', joinData.name, expires);
+
+      // 회원가입 시 입력받은 이름을 사용해 user 상태 설정
+      if (uuid) {
+        setUser({ name: joinData.name, uuid });
+      } else {
+        throw new Error('토큰에서 UUID를 추출할 수 없습니다.');
+      }
+      return true;
+    } catch (error: any) {
+      console.error('Context 회원가입 실패:', error);
+      logout(); // 실패 시 확실하게 로그아웃 처리
+      // 서버에서 온 message가 있으면 그대로 throw
+      if (error && typeof error.message === 'string') {
+        throw new Error(error.message);
+      }
+      throw new Error('회원가입에 실패했습니다.');
+    }
+  };
+  
+  // JWT에서 토큰 만료 여부로 인증 상태를 실시간으로 확인
+  const isAuthenticated = (() => {
+    const token = getCookie('accessToken');
+    return !!token && !isTokenExpired(token);
+  })();
+
+  const authValue = { user, login, signup, logout, isAuthenticated };
+
+  return <AuthContext.Provider value={authValue}>{children}</AuthContext.Provider>;
+}
+
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  if (!context) {
+    throw new Error('useAuth는 AuthProvider 안에서 사용해야 합니다.');
+  }
   return context;
 };
