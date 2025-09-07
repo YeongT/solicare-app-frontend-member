@@ -5,12 +5,12 @@ const RecentAlertsCard: React.FC = () => {
   const alerts = [
     {
       type: '낙상감지',
-      timestamp: '2025.07.30 17:55:22'
+      timestamp: '2025.07.30 17:55:22',
     },
     {
       type: '낙상감지',
-      timestamp: '2025.07.20 11:32:18'
-    }
+      timestamp: '2025.07.20 11:32:18',
+    },
   ];
 
   return (
@@ -31,5 +31,3 @@ const RecentAlertsCard: React.FC = () => {
 };
 
 export default RecentAlertsCard;
-
-

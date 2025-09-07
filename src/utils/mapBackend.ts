@@ -3,8 +3,18 @@
 import { SignUpResponse, LoginResponse } from '../types/member';
 import { getJwtSubject } from './jwt';
 
+interface BackendResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result?: {
+    token?: string;
+    name?: string;
+  };
+}
+
 // 회원가입 응답 매칭
-export function mapBackendJoinOutput(backendData: any): SignUpResponse {
+export function mapBackendJoinOutput(backendData: BackendResponse): SignUpResponse {
   const { isSuccess, code, message, result } = backendData;
   if (isSuccess && result) {
     return {
@@ -19,7 +29,7 @@ export function mapBackendJoinOutput(backendData: any): SignUpResponse {
 }
 
 // 로그인 응답 매칭
-export function mapBackendLoginOutput(backendData: any): LoginResponse {
+export function mapBackendLoginOutput(backendData: BackendResponse): LoginResponse {
   const { isSuccess, code, message, result } = backendData;
   if (isSuccess && result) {
     return {

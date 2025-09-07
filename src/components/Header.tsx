@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 import { useAuth } from '../contexts/AuthContext';
@@ -22,7 +22,10 @@ const Header: React.FC = () => {
   // 드롭다운 외부 클릭 시 닫기
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsDropdownOpen(false);
       }
     };
@@ -37,14 +40,17 @@ const Header: React.FC = () => {
     <header className="header">
       <div className="header-content">
         <div className="logo">
-          <Link to="/start" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <h1>Solicare</h1>
+          <Link
+            to="/start"
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <h1>Solicare Monitor</h1>
           </Link>
         </div>
         <nav className="nav">
           {isAuthenticated ? (
             <div className="user-dropdown" ref={dropdownRef}>
-              <button 
+              <button
                 className="user-button"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
@@ -52,7 +58,10 @@ const Header: React.FC = () => {
               </button>
               {isDropdownOpen && (
                 <div className="dropdown-menu">
-                  <button onClick={handleDashboardClick} className="dropdown-item">
+                  <button
+                    onClick={handleDashboardClick}
+                    className="dropdown-item"
+                  >
                     대시보드로 이동
                   </button>
                   <button onClick={handleLogout} className="dropdown-item">

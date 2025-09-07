@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/auth.css';
 import { useAuth } from '../contexts/AuthContext';
-import { JoinRequestBody } from '../types/api'; // 1. 회원가입 요청 타입을 import 합니다.
-
+import { JoinRequestBody } from '../types/api';
 
 const initialState: JoinRequestBody = {
   name: '',
@@ -16,7 +15,7 @@ const initialState: JoinRequestBody = {
 const formatPhoneNumber = (value: string): string => {
   // 숫자만 추출
   const numbers = value.replace(/[^\d]/g, '');
-  
+
   // 길이에 따라 하이픈 추가
   if (numbers.length <= 3) {
     return numbers;
@@ -42,21 +41,19 @@ const Signup: React.FC = () => {
   const { signup } = useAuth();
   const navigate = useNavigate();
 
-
-
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
+
     // 에러 메시지 초기화
     setError(null);
     setSuccess(null);
-    
+
     if (name === 'phoneNumber') {
       // 휴대폰 번호인 경우 포맷팅 적용
       const formattedValue = formatPhoneNumber(value);
-      setForm(prev => ({ ...prev, [name]: formattedValue }));
+      setForm((prev) => ({ ...prev, [name]: formattedValue }));
     } else {
-      setForm(prev => ({ ...prev, [name]: value }));
+      setForm((prev) => ({ ...prev, [name]: value }));
     }
 
     // 이메일 형식 검증
@@ -71,7 +68,7 @@ const Signup: React.FC = () => {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // 이메일 형식 검증
     if (!validateEmail(form.email)) {
       setEmailError('올바른 이메일 형식으로 입력해주세요.');
@@ -84,40 +81,20 @@ const Signup: React.FC = () => {
 
     try {
       const isSignupSuccess = await signup(form);
-
       if (isSignupSuccess) {
-        // 회원가입 성공 시에만 로그인 처리 및 대시보드로 이동
-        navigate('/dashboard');
+        setSuccess('회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
+        setTimeout(() => navigate('/login'), 2000);
       }
-    } catch (err: any) {
-      if (err instanceof Error) {
-        setError(err.message || '회원가입에 실패했습니다.');
-      } else {
-        setError('알 수 없는 오류가 발생했습니다.');
-      }
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
+      setError(errorMessage);
       setForm(initialState);
       setEmailError(null);
-      // 3초 후 에러 메시지 자동 제거
       setTimeout(() => setError(null), 3000);
     } finally {
       setLoading(false);
     }
-
-    /*
-    try {
-      const res = await joinMember(form);
-      if (res.isSuccess) {
-        setSuccess('회원가입 완료! 로그인 후 대시보드로 이동하세요.');
-        setTimeout(() => navigate('/login'), 800);
-      } else {
-        setError(res.message || '회원가입 실패');
-      }
-    } catch (err: any) {
-      setError(err.message || '오류 발생');
-    } finally {
-      setLoading(false);
-    }
-    */
   };
 
   return (
@@ -126,7 +103,9 @@ const Signup: React.FC = () => {
         <h2 className="auth-title">회원가입</h2>
         <form className="auth-form" onSubmit={onSubmit}>
           <div className="form-row">
-            <label className="form-label" htmlFor="name">이름</label>
+            <label className="form-label" htmlFor="name">
+              이름
+            </label>
             <input
               className="form-input"
               id="name"
@@ -139,7 +118,9 @@ const Signup: React.FC = () => {
           </div>
 
           <div className="form-row">
-            <label className="form-label" htmlFor="email">이메일</label>
+            <label className="form-label" htmlFor="email">
+              이메일
+            </label>
             <input
               className={`form-input ${emailError ? 'form-input-error' : ''}`}
               id="email"
@@ -154,7 +135,9 @@ const Signup: React.FC = () => {
           </div>
 
           <div className="form-row">
-            <label className="form-label" htmlFor="phoneNumber">휴대폰 번호</label>
+            <label className="form-label" htmlFor="phoneNumber">
+              휴대폰 번호
+            </label>
             <input
               className="form-input"
               id="phoneNumber"
@@ -168,7 +151,9 @@ const Signup: React.FC = () => {
           </div>
 
           <div className="form-row">
-            <label className="form-label" htmlFor="password">비밀번호</label>
+            <label className="form-label" htmlFor="password">
+              비밀번호
+            </label>
             <input
               className="form-input"
               id="password"
@@ -190,7 +175,10 @@ const Signup: React.FC = () => {
         </form>
 
         <p className="auth-footer-text">
-          이미 계정이 있으신가요? <a className="auth-link" href="/login">로그인</a>
+          이미 계정이 있으신가요?{' '}
+          <a className="auth-link" href="/login">
+            로그인
+          </a>
         </p>
       </div>
     </div>

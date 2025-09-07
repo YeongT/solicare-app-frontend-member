@@ -26,10 +26,8 @@
   .content-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .main-content {
     padding: 1rem;
   }
 }
-
-

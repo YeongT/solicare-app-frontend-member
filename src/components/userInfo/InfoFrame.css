@@ -1,15 +1,15 @@
 /* InfoFrame - Figma Auto layout 기반 */
 .info-frame {
-  width: 100%;               /* 고정폭 제거, 셀 너비에 맞춤 */
+  width: 100%; /* 고정폭 제거, 셀 너비에 맞춤 */
   max-width: 100%;
-  min-width: 0;              /* grid 아이템 수축 허용 */
+  min-width: 0; /* grid 아이템 수축 허용 */
   box-sizing: border-box;
 
-  display: flex;              /* Auto layout */
-  flex-direction: column;     /* Flow: vertical */
-  gap: 12px;                  /* 줄 간 간격 더 작게 */
-  padding: 0 6px;             /* Padding: V 0, H 6 */
-  overflow: hidden;           /* Clip content */
+  display: flex; /* Auto layout */
+  flex-direction: column; /* Flow: vertical */
+  gap: 12px; /* 줄 간 간격 더 작게 */
+  padding: 0 6px; /* Padding: V 0, H 6 */
+  overflow: hidden; /* Clip content */
 
   /* 텍스트 유연 크기 */
   font-size: clamp(14px, 1.4vw, 16px);
@@ -36,11 +36,11 @@
 .value {
   color: #1f2937;
   font-size: 1em;
-  line-height: 1.4;           /* 행간 조금 더 조밀하게 */
+  line-height: 1.4; /* 행간 조금 더 조밀하게 */
   letter-spacing: -0.005em;
-  white-space: normal;        /* 여러 줄 허용 */
-  overflow-wrap: anywhere;    /* 긴 문자열도 줄바꿈 허용 */
-  word-break: keep-all;       /* 한국어 단어는 가능한 단위로 줄바꿈 */
+  white-space: normal; /* 여러 줄 허용 */
+  overflow-wrap: anywhere; /* 긴 문자열도 줄바꿈 허용 */
+  word-break: keep-all; /* 한국어 단어는 가능한 단위로 줄바꿈 */
 }
 
 @media (max-width: 560px) {
@@ -50,8 +50,8 @@
     gap: 10px;
     font-size: clamp(13px, 3.2vw, 15px);
   }
+
   .info-row {
     grid-template-columns: 58px 1fr; /* 모바일에서 라벨 폭 약간 축소 */
   }
 }
-

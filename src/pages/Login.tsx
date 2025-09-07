@@ -7,7 +7,6 @@ import { useAuth } from '../contexts/AuthContext';
 // import { mockLoginApi as loginApi } from '../api/mockAuth';
 import { LoginRequestBody } from '../types/api'; // 1. 정의해둔 타입을 import 합니다.
 
-
 // 이메일 형식 검증 함수
 const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -27,11 +26,11 @@ const Login: React.FC = () => {
   // 입력 값 변경 처리
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
+
     // 에러 메시지 초기화
     setError(null);
-    
-    setForm(prev => ({ ...prev, [name]: value }));
+
+    setForm((prev) => ({ ...prev, [name]: value }));
 
     // 이메일 형식 검증
     if (name === 'email') {
@@ -46,7 +45,7 @@ const Login: React.FC = () => {
   // 로그인 폼 제출
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // 이메일 형식 검증
     if (!validateEmail(form.email)) {
       setEmailError('올바른 이메일 형식으로 입력해주세요.');
@@ -62,7 +61,7 @@ const Login: React.FC = () => {
         // 로그인 성공 시 대시보드로 이동
         navigate('/dashboard');
       }
-    } catch (err: any) {
+    } catch (err) {
       if (err instanceof Error) {
         setError(err.message || '로그인에 실패했습니다.');
       } else {
@@ -105,7 +104,9 @@ const Login: React.FC = () => {
         <h2 className="auth-title">로그인</h2>
         <form className="auth-form" onSubmit={onSubmit}>
           <div className="form-row">
-            <label className="form-label" htmlFor="email">이메일</label>
+            <label className="form-label" htmlFor="email">
+              이메일
+            </label>
             <input
               className={`form-input ${emailError ? 'form-input-error' : ''}`}
               id="email"
@@ -120,7 +121,9 @@ const Login: React.FC = () => {
           </div>
 
           <div className="form-row">
-            <label className="form-label" htmlFor="password">비밀번호</label>
+            <label className="form-label" htmlFor="password">
+              비밀번호
+            </label>
             <input
               className="form-input"
               type="password"
@@ -140,7 +143,10 @@ const Login: React.FC = () => {
         </form>
 
         <p className="auth-footer-text">
-          계정이 없으신가요? <a className="auth-link" href="/signup">회원가입</a>
+          계정이 없으신가요?{' '}
+          <a className="auth-link" href="/signup">
+            회원가입
+          </a>
         </p>
       </div>
     </div>

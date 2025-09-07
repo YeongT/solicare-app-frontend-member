@@ -1,11 +1,16 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './UserInfoCard.css';
 import InfoFrame from './userInfo/InfoFrame';
 import { useAuth } from '../contexts/AuthContext';
 import SeniorModal from './UserAddSenior';
 import AddSeniorEntryModal from './AddSeniorEntryModal';
-import { Senior, SeniorJoinRequestBody, AddSeniorRequestBody } from '../types/api';
-import { getSeniors, joinSenior, addSenior } from '../api/senior'; 
+import {
+  AddSeniorRequestBody,
+  Senior,
+  SeniorJoinRequestBody,
+} from '../types/api';
+import { addSenior, getSeniors, joinSenior } from '../api/senior';
+
 const UserInfoCard: React.FC = () => {
   const { user } = useAuth();
   const [seniors, setSeniors] = useState<Senior[]>([]);
@@ -14,17 +19,13 @@ const UserInfoCard: React.FC = () => {
   const [searchText, setSearchText] = useState('');
   const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
   const [isAddSeniorModalOpen, setIsAddSeniorModalOpen] = useState(false);
-  const [photoHeight, setPhotoHeight] = useState<number>(120);
+  const [photoSize, setPhotoSize] = useState<number>(120);
   const infoRef = useRef<HTMLDivElement | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [monitoringOn, setMonitoringOn] = useState(true); // on/off 토글 상태
-  
+
   // 2. 재사용을 위해 데이터 로딩 로직을 useCallback으로 감싼 함수로 분리
   const fetchSeniors = useCallback(async () => {
     if (user?.uuid) {
-      setIsLoading(true);
-      setError(null);
       try {
         const seniorList = await getSeniors(user.uuid);
         if (seniorList) {
@@ -35,16 +36,13 @@ const UserInfoCard: React.FC = () => {
         }
       } catch (err) {
         if (err instanceof Error) {
-          setError(err.message);
+          alert(err.message);
         } else {
-          setError('알 수 없는 오류가 발생했습니다.');
+          alert('알 수 없는 오류가 발생했습니다.');
         }
-      } finally {
-        setIsLoading(false);
       }
     } else {
-      setError('사용자 정보를 찾을 수 없습니다. 로그인 상태를 확인해주세요.');
-      setIsLoading(false);
+      alert('사용자 정보를 찾을 수 없습니다. 로그인 상태를 확인해주세요.');
     }
   }, [user, selectedSenior]);
 
@@ -53,12 +51,13 @@ const UserInfoCard: React.FC = () => {
     fetchSeniors();
   }, [fetchSeniors]); // fetchSeniors 함수가 변경될 때만 실행
 
-
   // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
-      if (!document.getElementById('user-dropdown-container')?.contains(target)) {
+      if (
+        !document.getElementById('user-dropdown-container')?.contains(target)
+      ) {
         setIsDropdownOpen(false);
       }
     };
@@ -72,7 +71,7 @@ const UserInfoCard: React.FC = () => {
       const node = infoRef.current;
       if (!node) return;
       const h = node.getBoundingClientRect().height;
-      setPhotoHeight(Math.max(90, Math.min(230, Math.round(h))));
+      setPhotoSize(Math.max(90, Math.min(230, Math.round(h))));
     };
 
     updateHeight();
@@ -88,7 +87,9 @@ const UserInfoCard: React.FC = () => {
     };
   }, [selectedSenior]);
 
-  const filteredSeniors = seniors.filter(s => s.name.toLowerCase().includes(searchText.toLowerCase()));
+  const filteredSeniors = seniors.filter((s) =>
+    s.name.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   const handleSelectSenior = (senior: Senior) => {
     setSelectedSenior(senior);
@@ -109,9 +110,9 @@ const UserInfoCard: React.FC = () => {
       }
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message);
+        alert(err.message);
       } else {
-        setError('알 수 없는 오류가 발생했습니다.');
+        alert('알 수 없는 오류가 발생했습니다.');
       }
     }
   };
@@ -137,32 +138,46 @@ const UserInfoCard: React.FC = () => {
       } else {
         alert('알 수 없는 오류로 추가에 실패했습니다.');
       }
-      console.error('시니어 간편 추가 실패', err);
     }
   };
 
-  /*
-  if (isLoading) {
-    return <div>로딩 중...</div>;
-  }
-
-  if (error) {
-    return <div>오류: {error}</div>;
-  }
-  */
-
   return (
     <section className="user-info-container">
-  {/* 헤더 + 드롭다운 */}
-      <div id="user-dropdown-container" className="user-info-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h3 className="user-header" onClick={() => setIsDropdownOpen(prev => !prev)} style={{ flex: 1, cursor: 'pointer', margin: 0 }}>
+      {/* 헤더 + 드롭다운 */}
+      <div
+        id="user-dropdown-container"
+        className="user-info-title"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <h3
+          className="user-header"
+          onClick={() => setIsDropdownOpen((prev) => !prev)}
+          style={{ flex: 1, cursor: 'pointer', margin: 0 }}
+        >
           모니터링 대상 : {selectedSenior?.name ?? '선택하세요'}
           <span className="dropdown-arrow">{isDropdownOpen ? '▲' : '▼'}</span>
         </h3>
         <button
           className="monitoring-toggle-btn"
-          style={{ marginLeft: 16, padding: '0.3em 1.2em', borderRadius: 20, border: '1px solid #bbb', background: monitoringOn ? '#4ade80' : '#e5e7eb', color: monitoringOn ? '#fff' : '#888', fontWeight: 600, fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s', position: 'relative', top: '-8px' }}
-          onClick={() => setMonitoringOn(on => !on)}
+          style={{
+            marginLeft: 16,
+            padding: '0.3em 1.2em',
+            borderRadius: 20,
+            border: '1px solid #bbb',
+            background: monitoringOn ? '#4ade80' : '#e5e7eb',
+            color: monitoringOn ? '#fff' : '#888',
+            fontWeight: 600,
+            fontSize: '1rem',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            position: 'relative',
+            top: '-8px',
+          }}
+          onClick={() => setMonitoringOn((on) => !on)}
         >
           {monitoringOn ? 'ON' : 'OFF'}
         </button>
@@ -174,15 +189,23 @@ const UserInfoCard: React.FC = () => {
                 type="text"
                 placeholder="검색"
                 value={searchText}
-                onChange={e => setSearchText(e.target.value)}
+                onChange={(e) => setSearchText(e.target.value)}
               />
-              <button className="add-btn" onClick={() => setIsEntryModalOpen(true)}>추가</button>
+              <button
+                className="add-btn"
+                onClick={() => setIsEntryModalOpen(true)}
+              >
+                추가
+              </button>
             </div>
 
             <ul className="dropdown-list">
-              {filteredSeniors.map(s => (
-                <li key={s.userId}> 
-                  <button className="dropdown-item" onClick={() => handleSelectSenior(s)}>
+              {filteredSeniors.map((s) => (
+                <li key={s.userId}>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => handleSelectSenior(s)}
+                  >
                     {s.name} ({s.gender === 'MALE' ? '남' : '여'}, {s.age}세) 님
                   </button>
                 </li>
@@ -195,7 +218,10 @@ const UserInfoCard: React.FC = () => {
       {/* 본문 */}
       {selectedSenior && (
         <div className="user-info-content">
-          <div className="photo-frame" style={{ width: photoHeight, height: photoHeight }}>
+          <div
+            className="photo-frame"
+            style={{ width: photoSize, height: photoSize }}
+          >
             {selectedSenior ? (
               <img
                 src={`/images/user-photo${(selectedSenior.age % 3) + 1}.png`}
@@ -206,15 +232,23 @@ const UserInfoCard: React.FC = () => {
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
-              ) : (
-              <span role="img" aria-label="grandma" className="photo-emoji">👵</span>
-              )}
+            ) : (
+              <span role="img" aria-label="grandma" className="photo-emoji">
+                👵
+              </span>
+            )}
           </div>
           <InfoFrame
             ref={infoRef}
             name={selectedSenior.name}
             age={selectedSenior.age}
-            gender={selectedSenior.gender === 'MALE' ? '남성' : selectedSenior.gender === 'FEMALE' ? '여성' : '기타'}
+            gender={
+              selectedSenior.gender === 'MALE'
+                ? '남성'
+                : selectedSenior.gender === 'FEMALE'
+                  ? '여성'
+                  : '기타'
+            }
             address={selectedSenior.address}
             note={selectedSenior.note}
           />
@@ -233,7 +267,7 @@ const UserInfoCard: React.FC = () => {
           onQuickAdd={handleQuickAddSenior}
         />
       )}
-  
+
       {/* 실제 대상자 추가 모달 */}
       {isAddSeniorModalOpen && (
         <SeniorModal

@@ -39,4 +39,3 @@ const InfoFrame = React.forwardRef<HTMLDivElement, InfoFrameProps>(
 );
 
 export default InfoFrame;
-

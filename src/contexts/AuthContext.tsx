@@ -1,8 +1,14 @@
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { login as apiLogin, join as apiJoin } from '../api/member';
-import { LoginRequestBody, JoinRequestBody } from '../types/api';
-import { setCookie, getCookie, deleteCookie } from '../utils/cookies';
-import { getJwtExpiration, isTokenExpired, getJwtUuid } from '../utils/jwt';
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { join as apiJoin, login as apiLogin } from '../api/member';
+import { JoinRequestBody, LoginRequestBody } from '../types/api';
+import { deleteCookie, getCookie, setCookie } from '../utils/cookies';
+import { getJwtExpiration, getJwtUuid, isTokenExpired } from '../utils/jwt';
 
 interface AuthContextType {
   user: User | null;
@@ -43,11 +49,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!responseBody) {
         throw new Error('로그인 응답에 body가 없습니다.');
       }
-      
+
       const { token, name } = responseBody;
       const uuid = getJwtUuid(token);
       const expires = getJwtExpiration(token);
-      
+
       setCookie('accessToken', token, expires);
       setCookie('userName', name, expires);
 
@@ -57,9 +63,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser({ name, uuid: '' });
       }
       return true;
-
     } catch (error) {
-      console.error('Context 로그인 실패:', error);
+      // console.error('Context 로그인 실패:', error); // 경고 방지: 주석 처리
       logout();
       if (error instanceof Error) {
         throw new Error(error.message || '로그인에 실패했습니다.');
@@ -73,8 +78,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     deleteCookie('userName');
     setUser(null);
   };
-
-
 
   const signup = async (joinData: JoinRequestBody): Promise<boolean> => {
     try {
@@ -98,17 +101,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
         throw new Error('토큰에서 UUID를 추출할 수 없습니다.');
       }
       return true;
-    } catch (error: any) {
-      console.error('Context 회원가입 실패:', error);
+    } catch (error) {
+      // console.error('Context 회원가입 실패:', error); // 경고 방지: 주석 처리
       logout(); // 실패 시 확실하게 로그아웃 처리
-      // 서버에서 온 message가 있으면 그대로 throw
-      if (error && typeof error.message === 'string') {
-        throw new Error(error.message);
+      if (error instanceof Error) {
+        throw new Error(error.message || '회원가입에 실패했습니다.');
       }
       throw new Error('회원가입에 실패했습니다.');
     }
   };
-  
+
   // JWT에서 토큰 만료 여부로 인증 상태를 실시간으로 확인
   const isAuthenticated = (() => {
     const token = getCookie('accessToken');
@@ -117,7 +119,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const authValue = { user, login, signup, logout, isAuthenticated };
 
-  return <AuthContext.Provider value={authValue}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={authValue}>{children}</AuthContext.Provider>
+  );
 }
 
 export const useAuth = (): AuthContextType => {

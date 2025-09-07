@@ -1,5 +1,9 @@
 import { apiClient } from './apiClient';
-import { Senior, SeniorJoinRequestBody, AddSeniorRequestBody } from '../types/api';
+import {
+  AddSeniorRequestBody,
+  Senior,
+  SeniorJoinRequestBody,
+} from '../types/api';
 
 /**
  * 특정 회원이 모니터링하는 시니어 목록을 조회하는 API
@@ -10,12 +14,13 @@ export const getSeniors = (memberUuid: string): Promise<Senior[] | null> => {
   return apiClient.get(`/member/${memberUuid}/seniors`);
 };
 
-
 /**
  * 새로운 시니어를 등록하는 API
  * @param seniorData - 등록할 시니어의 정보
  */
-export const joinSenior = (seniorData: SeniorJoinRequestBody): Promise<Senior | null> => {
+export const joinSenior = (
+  seniorData: SeniorJoinRequestBody
+): Promise<Senior | null> => {
   return apiClient.post('/senior/join', seniorData);
 };
 

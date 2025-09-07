@@ -10,5 +10,5 @@ export interface Senior {
   phoneNumber?: string;
   address: string;
   note?: string;
-  photo?: string; 
+  photo?: string;
 }

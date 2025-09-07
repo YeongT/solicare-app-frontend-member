@@ -9,7 +9,7 @@ export async function signUpApi(name: string, email: string, phoneNumber: string
   try {
     const res = await apiClient.post('/member/join', { name, email, phoneNumber, password });
     return mapBackendJoinOutput(res.data);
-  } catch (err: any) { 
+  } catch (err: unknown) {
     console.error('회원가입 오류', err);
     return { isSuccess: false, message: '서버 오류 발생' }; 
   }
@@ -21,7 +21,7 @@ export async function loginApi(email: string, password: string): Promise<LoginRe
     
     const { token } = res.data.body;
     return mapBackendLoginOutput(res.data);
-  } catch (err: any) { 
+  } catch (err: unknown) {
     console.error('로그인 오류', err);
     return { isSuccess: false, message: '서버 오류 발생' }; 
   }

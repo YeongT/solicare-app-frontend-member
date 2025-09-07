@@ -46,8 +46,8 @@ export interface Senior {
 
 // 시니어 등록 요청 시 보낼 데이터 타입
 export interface SeniorJoinRequestBody {
-  userId: string;       // 시니어 ID 추가
-  password: string;     // 시니어 비밀번호 추가
+  userId: string; // 시니어 ID 추가
+  password: string; // 시니어 비밀번호 추가
   name: string;
   age: number;
   gender: 'MALE' | 'FEMALE';

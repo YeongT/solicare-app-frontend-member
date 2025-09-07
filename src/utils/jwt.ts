@@ -10,7 +10,10 @@ interface JwtPayload {
 export const isTokenExpired = (token: string): boolean => {
   if (!token) return true;
   try {
-    const payloadBase64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payloadBase64 = token
+      .split('.')[1]
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
     const decodedJson = atob(payloadBase64);
     const decoded: JwtPayload = JSON.parse(decodedJson);
     return Date.now() >= decoded.exp * 1000;
@@ -25,7 +28,10 @@ export const isTokenExpired = (token: string): boolean => {
 export function getJwtExpiration(token: string): Date | null {
   if (!token) return null;
   try {
-    const payloadBase64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payloadBase64 = token
+      .split('.')[1]
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
     const decodedJson = atob(payloadBase64);
     const decoded: JwtPayload = JSON.parse(decodedJson);
 
@@ -42,7 +48,10 @@ export function getJwtExpiration(token: string): Date | null {
 export function getJwtUuid(token: string): string | null {
   if (!token) return null;
   try {
-    const payloadBase64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payloadBase64 = token
+      .split('.')[1]
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
     const decodedJson = atob(payloadBase64);
     const decoded: JwtPayload = JSON.parse(decodedJson);
     return decoded.sub || null;

@@ -1,9 +1,8 @@
-import axios, { AxiosResponse } from 'axios';
-import { getCookie, deleteCookie } from '../utils/cookies';
-import { ApiResponse } from '../types/api';
+import axios from 'axios';
+import { deleteCookie, getCookie } from '../utils/cookies';
 
-
-const BASE_URL = process.env.REACT_APP_BASE_API_URL || 'https://dev-api.solicare.kro.kr/api';
+const BASE_URL =
+  process.env.REACT_APP_BASE_API_URL || 'https://dev-api.solicare.kro.kr/api';
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -12,7 +11,6 @@ export const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
 });
-
 
 apiClient.interceptors.request.use(
   (config) => {
@@ -30,12 +28,12 @@ apiClient.interceptors.response.use(
     if (response.data.isSuccess) {
       return response.data.body ?? null; // body가 없으면 null 반환
     }
-    if(response.data.errors){
-      console.error('API 오류:', response.data.errors);
-    }
+    // console.error('API 오류:', response.data.errors); // 경고 방지: 주석 처리
     // 서버 실패 응답을 Error 객체로 throw
-    const error = new Error(response.data.message || '알 수 없는 오류가 발생했습니다.');
-    (error as any).code = response.data.code;
+    const error: Error & { code?: string } = new Error(
+      response.data.message || '알 수 없는 오류가 발생했습니다.'
+    );
+    error.code = response.data.code;
     return Promise.reject(error);
   },
   (error) => {
@@ -47,8 +45,10 @@ apiClient.interceptors.response.use(
     }
     // 서버에서 온 message가 있으면 그대로 Error로 throw
     if (error.response?.data?.message) {
-      const err = new Error(error.response.data.message);
-      (err as any).code = error.response.data.code;
+      const err: Error & { code?: string } = new Error(
+        error.response.data.message
+      );
+      err.code = error.response.data.code;
       return Promise.reject(err);
     }
     return Promise.reject(error);

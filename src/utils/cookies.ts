@@ -1,7 +1,11 @@
 /**
  * 쿠키를 설정합니다.
  */
-export function setCookie(name: string, value: string, expires: Date | null): void {
+export function setCookie(
+  name: string,
+  value: string,
+  expires: Date | null
+): void {
   let expiresStr = '';
   if (expires) {
     expiresStr = `expires=${expires.toUTCString()}`;
@@ -13,7 +17,9 @@ export function setCookie(name: string, value: string, expires: Date | null): vo
  * 쿠키 값을 가져옵니다.
  */
 export const getCookie = (name: string): string | null => {
-  const match = document.cookie.match(new RegExp('(^|;\\s*)' + name + '=([^;]*)'));
+  const match = document.cookie.match(
+    new RegExp('(^|;\\s*)' + name + '=([^;]*)')
+  );
   return match ? decodeURIComponent(match[2]) : null;
 };
 
