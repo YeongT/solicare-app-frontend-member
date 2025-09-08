@@ -1,0 +1,115 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "테스트 사용자",
+      "email": "test@example.com",
+      "phoneNumber": "010-1234-5678",
+      "password": "password123"
+    },
+    {
+      "id": "2",
+      "name": "정은진",
+      "email": "eunjin7254@naver.com",
+      "phoneNumber": "010-1234-5678",
+      "password": "qwer1234"
+    },
+    {
+      "id": "3",
+      "name": "정은지",
+      "email": "eunjii@naver.com",
+      "phoneNumber": "010-9876-5432",
+      "password": "987654321"
+    }
+  ],
+  "login": {
+    "success": {
+      "status": "SUCCESS",
+      "response": {
+        "token": "mock-jwt-token-12345",
+        "name": "테스트 사용자"
+      }
+    },
+    "userNotFound": {
+      "status": "USER_NOT_FOUND",
+      "message": "사용자를 찾을 수 없습니다."
+    },
+    "invalidPassword": {
+      "status": "INVALID_PASSWORD",
+      "message": "비밀번호가 잘못되었습니다."
+    }
+  },
+  "signup": {
+    "success": {
+      "status": "SUCCESS",
+      "response": {
+        "token": "mock-jwt-token-signup-12345",
+        "name": "새로운 사용자"
+      }
+    },
+    "emailExists": {
+      "status": "EMAIL_EXISTS",
+      "message": "이미 존재하는 이메일입니다."
+    }
+  },
+  "seniors": [
+    {
+      "monitorUserUuid": "550e8400-e29b-41d4-a716-446655440000",
+      "userId": "testuser",
+      "name": "홍순자",
+      "age": 82,
+      "gender": "FEMALE",
+      "phoneNumber": "010-1234-5678",
+      "address": "서울특별시 동작구 흑석로 84",
+      "note": "고혈압 주의",
+      "id": "7267",
+      "photo": "/images/user-photo1.png"
+    },
+    {
+      "monitorUserUuid": "550e8400-e29b-41d4-a716-446655440001",
+      "userId": "testuser2",
+      "name": "김영희",
+      "age": 77,
+      "gender": "FEMALE",
+      "phoneNumber": "010-5678-1234",
+      "address": "서울특별시 동작구 상도로 12",
+      "note": "당뇨 주의",
+      "id": "1330",
+      "photo": "/images/user-photo3.png"
+    },
+    {
+      "id": "6fc2",
+      "name": "박효신",
+      "userId": "123456789",
+      "password": "123456789",
+      "gender": "MALE",
+      "age": "60",
+      "phoneNumber": "010-1234-5678",
+      "address": "경상남도 진주시 하대동",
+      "note": "당뇨병",
+      "photo": "/images/user-photo2.png"
+    },
+    {
+      "id": "ad88",
+      "name": "김미미",
+      "userId": "qwer",
+      "password": "qwer",
+      "gender": "FEMALE",
+      "age": "59",
+      "phoneNumber": "010-1111-1111",
+      "address": "전라남도 목포",
+      "note": "고혈압"
+    },
+    {
+      "id": "fc39",
+      "name": "1234",
+      "userId": "1234",
+      "password": "1234",
+      "gender": "OTHER",
+      "age": 0,
+      "phoneNumber": "",
+      "address": "",
+      "note": ""
+    }
+  ]
+}

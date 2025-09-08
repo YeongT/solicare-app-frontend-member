@@ -1,0 +1,106 @@
+name: Deploy to lightsail instance
+
+on:
+  push:
+    branches: [ master ]
+
+permissions:
+  contents: read
+  deployments: write
+  statuses: write
+
+jobs:
+  build:
+    runs-on: self-hosted
+    outputs:
+      deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Enable Yarn
+        run: corepack enable
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/yarn
+            node_modules
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            yarn-${{ runner.os }}-
+      - name: Install dependencies
+        run: yarn install
+      - name: Create GitHub Deployment
+        id: deployment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deployment = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+              environment: 'aws-lightsail-solicare-instance',
+              transient_environment: false,
+              auto_inactive: true,
+              required_contexts: []
+            });
+            core.setOutput('deployment_id', deployment.data.id)
+      - name: Build (yarn)
+        shell: bash
+        env:
+          CI: ${{ vars.CI || 'false' }}
+        run: yarn build
+      - name: Run tests
+        run: yarn test --watchAll=false
+      - name: Deployment Status Failure (Build Failed)
+        if: failure() && steps.deployment.outputs.deployment_id != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: ${{ steps.deployment.outputs.deployment_id }},
+              state: 'failure',
+              description: 'Build or test failed',
+              log_url: `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}`
+            })
+
+  deploy:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - name: Ensure target directory exists
+        run: sudo mkdir -p /usr/share/nginx/html/member
+      - name: Remove old files in target directory
+        run: sudo rm -rf /usr/share/nginx/html/member/*
+      - name: Move build files to nginx directory
+        run: sudo mv build/* /usr/share/nginx/html/member/
+      - name: Deployment Status Success
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: ${{ needs.build.outputs.deployment_id }},
+              state: 'success',
+              environment_url: 'https://www.solicare.kro.kr',
+              log_url: `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}`
+            })
+      - name: Deployment Status Failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: ${{ needs.build.outputs.deployment_id }},
+              state: 'failure',
+              log_url: `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}`
+            })

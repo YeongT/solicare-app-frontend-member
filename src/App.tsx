@@ -1,25 +1,44 @@
 import React from 'react';
-import logo from './logo.svg';
+import {
+  BrowserRouter as Router,
+  Navigate,
+  Route,
+  Routes,
+} from 'react-router-dom';
 import './App.css';
+import Header from './components/Header';
+import MainContent from './components/MainContent';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Start from './pages/Start';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <AuthProvider>
+        <div className="App">
+          <Header />
+          <Routes>
+            <Route path="/" element={<Navigate to="/start" replace />} />
+            <Route path="/start" element={<Start />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <MainContent />
+                </ProtectedRoute>
+              }
+            />
+            {/* 404 페이지 - 존재하지 않는 경로는 시작 페이지로 리다이렉트 */}
+            <Route path="*" element={<Navigate to="/start" replace />} />
+          </Routes>
+        </div>
+      </AuthProvider>
+    </Router>
   );
 }
 

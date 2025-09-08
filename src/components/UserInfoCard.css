@@ -1,0 +1,178 @@
+/* 전체 카드 */
+.user-info-container {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.25rem 1.25rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1;
+}
+
+/* 헤더 */
+.user-info-title {
+  position: relative;
+}
+
+.user-header {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.05rem;
+  color: #2f2f2f;
+  cursor: pointer;
+  width: 100%;
+  border-bottom: 1px solid #e7e7e7;
+  padding-bottom: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.dropdown-arrow {
+  margin-left: 8px;
+  font-size: 0.85rem;
+}
+
+/* 드롭다운 */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  transform: translateY(-1.8em);
+  left: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 50%;
+  min-width: max-content;
+  padding: 0;
+  z-index: 1000;
+}
+
+.dropdown-search {
+  display: flex;
+  padding: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dropdown-search input {
+  flex: 1;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.add-btn {
+  margin-left: 0.5rem;
+  padding: 0 0.5rem;
+  border: none;
+  background: none;
+  color: #000;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.dropdown-list {
+  max-height: 10rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.dropdown-list li {
+  list-style: none;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #f9f9f9;
+  cursor: pointer;
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background-color: #f3f4f6;
+}
+
+/* 본문 */
+.user-info-content {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  margin-top: 1.5rem;
+}
+
+.photo-frame {
+  width: 100px;
+  height: 100px;
+  min-width: 90px;
+  min-height: 90px;
+  max-width: 230px;
+  max-height: 230px;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  background: #f4f4f4;
+  border: 1px solid #dedede;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.photo-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo-emoji {
+  font-size: 2rem;
+}
+
+/* 모바일 */
+@media (max-width: 560px) {
+  .user-info-content {
+    grid-template-columns: 1fr;
+  }
+
+  .photo-frame {
+    margin: 0 auto;
+  }
+}
+
+/* 모달 */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  width: 300px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
