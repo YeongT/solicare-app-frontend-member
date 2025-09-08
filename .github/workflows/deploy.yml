@@ -16,6 +16,23 @@ jobs:
       deployment_id: ${{ steps.deployment.outputs.deployment_id }}
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Enable Yarn
+        run: corepack enable
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/yarn
+            node_modules
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            yarn-${{ runner.os }}-
+      - name: Install dependencies
+        run: yarn install
       - name: Create GitHub Deployment
         id: deployment
         uses: actions/github-script@v7
@@ -31,44 +48,14 @@ jobs:
               required_contexts: []
             });
             core.setOutput('deployment_id', deployment.data.id)
-      - name: Cache Yarn dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/yarn
-            node_modules
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            yarn-${{ runner.os }}-
-      - name: Install dependencies (yarn)
-        shell: bash
-        run: yarn install --frozen-lockfile
       - name: Build (yarn)
         shell: bash
+        env:
+          CI: ${{ vars.CI || 'false' }}
         run: yarn build
-      - name: Upload production-ready build
-        uses: actions/upload-artifact@v4
-        with:
-          name: build
-          path: build
-
-      # Deployment status update (success)
-      - name: Deployment Status Success
-        if: success() && steps.deployment.outputs.deployment_id != ''
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.repos.createDeploymentStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              deployment_id: ${{ steps.deployment.outputs.deployment_id }},
-              state: 'success',
-              environment_url: 'https://www.solicare.kro.kr',
-              log_url: 'https://github.com/Solicare/solicare-app-frontend/actions/runs/${{ github.run_id }}#step:~:text=Build+(yarn)'
-            })
-
-      # Deployment status update (failure)
-      - name: Deployment Status Failure
+      - name: Run tests
+        run: yarn test --watchAll=false
+      - name: Deployment Status Failure (Build Failed)
         if: failure() && steps.deployment.outputs.deployment_id != ''
         uses: actions/github-script@v7
         with:
@@ -78,48 +65,22 @@ jobs:
               repo: context.repo.repo,
               deployment_id: ${{ steps.deployment.outputs.deployment_id }},
               state: 'failure',
-              log_url: 'https://github.com/Solicare/solicare-app-frontend/actions/runs/${{ github.run_id }}'
+              description: 'Build or test failed',
+              log_url: `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}`
             })
-
-  test:
-    runs-on: self-hosted
-    needs: build
-    steps:
-      - uses: actions/checkout@v4
-      - name: Cache Yarn dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/yarn
-            node_modules
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            yarn-${{ runner.os }}-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      - name: Run tests
-        run: yarn test --watchAll=false
 
   deploy:
     runs-on: self-hosted
-    needs: [test, build]
+    needs: build
     steps:
-      - uses: actions/checkout@v4
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build
-          path: build
-      - name: Install pm2 and serve
-        run: yarn global add pm2 serve
-      - name: Start app with pm2
-        run: |
-          npx pm2 delete solicare-frontend || true
-          npx pm2 start npx --name solicare-frontend -- serve -s build -l 3000
-      - name: Show pm2 status
-        run: npx pm2 status
+      - name: Ensure target directory exists
+        run: sudo mkdir -p /usr/share/nginx/html/member
+      - name: Remove old files in target directory
+        run: sudo rm -rf /usr/share/nginx/html/member/*
+      - name: Move build files to nginx directory
+        run: sudo mv build/* /usr/share/nginx/html/member/
       - name: Deployment Status Success
-        if: success() && needs.build.result == 'success' && needs.test.result == 'success'
+        if: success()
         uses: actions/github-script@v7
         with:
           script: |
@@ -132,7 +93,7 @@ jobs:
               log_url: `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}`
             })
       - name: Deployment Status Failure
-        if: failure() || needs.build.result == 'failure' || needs.test.result == 'failure'
+        if: failure()
         uses: actions/github-script@v7
         with:
           script: |
