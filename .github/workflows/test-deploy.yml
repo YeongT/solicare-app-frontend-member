@@ -35,5 +35,10 @@ jobs:
         env:
           CI: ${{ vars.CI || 'false' }}
         run: yarn build
-      - name: Run tests
-        run: yarn test --watchAll=false
+      - name: Run tests if test files exist
+        run: |
+          if ls src/**/*.{spec,test}.{js,jsx,ts,tsx} 1> /dev/null 2>&1; then
+            yarn test --watchAll=false
+          else
+            echo "No test files found, skipping tests."
+          fi
