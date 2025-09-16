@@ -52,6 +52,7 @@ jobs:
         shell: bash
         env:
           CI: ${{ vars.CI || 'false' }}
+          REACT_APP_BASE_API_URL: ${{ vars.BASE_API_URL }}
         run: yarn build
       - name: Run tests if test files exist
         run: |
