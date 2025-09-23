@@ -5,7 +5,7 @@ import axios from 'axios';
 import { deleteCookie, getCookie } from '../utils/cookies';
 
 const BASE_URL =
-  process.env.REACT_APP_BASE_API_URL || 'https://api.solicare.kro.kr/api';
+  process.env.REACT_APP_BASE_API_URL || 'http://localhost:8080/api';
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,

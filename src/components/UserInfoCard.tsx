@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './UserInfoCard.css';
 import InfoFrame from './userInfo/InfoFrame';
 import { useAuth } from '../contexts/AuthContext';
@@ -7,18 +7,10 @@ import AddSeniorEntryModal from './AddSeniorEntryModal';
 import {
   AddSeniorRequestBody,
   CareSeniorBriefResponseBody,
-  Senior,
   SeniorDetailResponseBody,
   SeniorJoinRequestBody,
 } from '../types/api';
-import {
-  addSenior,
-  getSeniors,
-  joinSenior,
-  getSeniorDetail,
-} from '../api/senior';
-import { on } from 'events';
-
+import { addSenior, joinSenior } from '../api/senior';
 
 interface UserInfoCardProps {
   seniors: CareSeniorBriefResponseBody[];
@@ -43,7 +35,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({
   //const [seniors, setSeniors] = useState<CareSeniorBriefResponseBody[]>([]);
   //const [selectedSenior, setSelectedSenior] = useState<CareSeniorBriefResponseBody | null>(null);
   //const [seniorDetail, setSeniorDetail] = useState<SeniorDetailResponseBody | null>(null);
-  
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
@@ -58,35 +50,35 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({
     if (user) setIsUserReady(true);
   }, [user]);
 */
-  // 2. 재사용을 위해 데이터 로딩 로직을 useCallback으로 감싼 함수로 분리  
-//  const fetchSeniors = useCallback(async () => {
-//    if (!user?.uuid) return; // user 정보가 없으면 아무것도 하지 않음
-//    try {
-//      const seniorList = await getSeniors(user.uuid);
-//      if (seniorList) {
-//        setSeniors(seniorList);
-//        /* 
-//        // 최초 로딩 시 selectedSenior가 없으면 첫 번째 시니어를 선택 
-//        if (seniorList.length > 0 && !selectedSenior) {
-//          setSelectedSenior(seniorList[0]);
-//        }
-//        */
-//      }
-//    } catch (err) {
-//     if (err instanceof Error) {
-//       alert(err.message);
-//      } else {
-//        alert('알 수 없는 오류가 발생했습니다.');
-//      }
-//    }
-//  }, [user /*, selectedSenior*/]);
-//
-//  // 3. 페이지가 처음 로드될 때(마운트될 때) 시니어 목록을 불러옵니다.
-//  useEffect(() => {
-//    if (user?.uuid) {
-//      fetchSeniors();
-//    }
-//  }, [fetchSeniors, user]); // user가 준비된 후에만 실행
+  // 2. 재사용을 위해 데이터 로딩 로직을 useCallback으로 감싼 함수로 분리
+  //  const fetchSeniors = useCallback(async () => {
+  //    if (!user?.uuid) return; // user 정보가 없으면 아무것도 하지 않음
+  //    try {
+  //      const seniorList = await getSeniors(user.uuid);
+  //      if (seniorList) {
+  //        setSeniors(seniorList);
+  //        /*
+  //        // 최초 로딩 시 selectedSenior가 없으면 첫 번째 시니어를 선택
+  //        if (seniorList.length > 0 && !selectedSenior) {
+  //          setSelectedSenior(seniorList[0]);
+  //        }
+  //        */
+  //      }
+  //    } catch (err) {
+  //     if (err instanceof Error) {
+  //       alert(err.message);
+  //      } else {
+  //        alert('알 수 없는 오류가 발생했습니다.');
+  //      }
+  //    }
+  //  }, [user /*, selectedSenior*/]);
+  //
+  //  // 3. 페이지가 처음 로드될 때(마운트될 때) 시니어 목록을 불러옵니다.
+  //  useEffect(() => {
+  //    if (user?.uuid) {
+  //      fetchSeniors();
+  //    }
+  //  }, [fetchSeniors, user]); // user가 준비된 후에만 실행
 
   // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
@@ -191,7 +183,6 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({
       }
     }
   };
-
 
   // user가 없거나 uuid가 없으면 아무것도 렌더링하지 않음 (ProtectedRoute에서 로그인 체크)
   if (!user?.uuid) {

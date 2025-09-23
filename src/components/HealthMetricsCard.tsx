@@ -9,17 +9,18 @@ import {
   YAxis,
 } from 'recharts';
 import './HealthMetricsCard.css';
-import { Senior, SeniorDetailResponseBody, SeniorStat } from '../types/api';
+import { SeniorDetailResponseBody, SeniorStat } from '../types/api';
 
 interface HealthMetricsCardProps {
   seniorDetail?: SeniorDetailResponseBody | null;
 }
 
 const INITIAL_POINTS = 10; // 초기 데이터 개수
-const MAX_POINTS = 10; // 그래프 최대 표시 포인트
 const UPDATE_INTERVAL = 60000; // 1분 단위
 
-const HealthMetricsCard: React.FC<HealthMetricsCardProps> = ({ seniorDetail }) => {
+const HealthMetricsCard: React.FC<HealthMetricsCardProps> = ({
+  seniorDetail,
+}) => {
   const [data, setData] = useState<SeniorStat[]>([]);
 
   // 초기 데이터 생성
@@ -50,7 +51,7 @@ const HealthMetricsCard: React.FC<HealthMetricsCardProps> = ({ seniorDetail }) =
     // console.log('임시 시니어 상태 데이터:', data);
   }, [seniorDetail]);
 
-/*
+  /*
   // 1분마다 새 데이터 추가
   useEffect(() => {
     const interval = setInterval(() => {

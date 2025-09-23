@@ -4,7 +4,9 @@ import { SeniorDetailResponseBody } from '../types/api';
  * 특정 시니어의 상세 프로필 정보를 조회하는 API
  * @param seniorUuid - 시니어 UUID
  */
-export const getSeniorDetail = (seniorUuid: string): Promise<SeniorDetailResponseBody | null> => {
+export const getSeniorDetail = (
+  seniorUuid: string
+): Promise<SeniorDetailResponseBody | null> => {
   return apiClient.get(`/care/senior/${seniorUuid}`);
 };
 
