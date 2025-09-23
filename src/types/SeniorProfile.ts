@@ -1,3 +1,5 @@
+export {};
+/*
 export interface Senior {
   userId: string;
   password: string;
@@ -8,3 +10,4 @@ export interface Senior {
   address: string;
   note?: string;
 }
+*/

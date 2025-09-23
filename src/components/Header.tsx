@@ -44,7 +44,7 @@ const Header: React.FC = () => {
             to="/start"
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
-            <h1>Solicare Monitor</h1>
+            <h1>Solicare Monitor Dashboard</h1>
           </Link>
         </div>
         <nav className="nav">

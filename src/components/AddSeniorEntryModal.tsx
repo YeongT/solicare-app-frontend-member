@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './UserAddSenior.css';
 import { AddSeniorRequestBody } from '../types/api';
 
@@ -6,7 +6,7 @@ interface AddSeniorEntryModalProps {
   isOpen: boolean;
   onClose: () => void;
   onClickAdd: () => void;
-  onQuickAdd: (data: { userId: string; password: string }) => void;
+  onQuickAdd: (data: { userId: string; password: string }) => Promise<string>;
 }
 
 const AddSeniorEntryModal: React.FC<AddSeniorEntryModalProps> = ({
@@ -19,59 +19,114 @@ const AddSeniorEntryModal: React.FC<AddSeniorEntryModalProps> = ({
     userId: '',
     password: '',
   });
+  const [message, setMessage] = useState<{
+    type: 'error' | 'success';
+    text: string;
+  } | null>(null);
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  const handleQuickAdd = (e: React.FormEvent) => {
+  const handleQuickAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!addSeniorData.userId || !addSeniorData.password) {
-      alert('ID와 비밀번호를 모두 입력해주세요.');
+    setMessage(null);
+    if (!addSeniorData.userId) {
+      setMessage({ type: 'error', text: 'ID를 입력해주세요.' });
       return;
     }
-    onQuickAdd(addSeniorData);
-    setAddSeniorData({ userId: '', password: '' });
+    if (!addSeniorData.password) {
+      setMessage({ type: 'error', text: '비밀번호를 입력해주세요.' });
+      return;
+    }
+    const resultMsg = await onQuickAdd(addSeniorData);
+    if (typeof resultMsg === 'string' && resultMsg.includes('성공')) {
+      setMessage({ type: 'success', text: resultMsg });
+      setAddSeniorData({ userId: '', password: '' });
+    } else {
+      setMessage({ type: 'error', text: resultMsg || '추가에 실패했습니다.' });
+    }
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-        <h3 className="modal-title">대상자 추가</h3>
+    <div className="modal-backdrop">
+      <div
+        className="modal-card modal-card-large"
+        ref={modalRef}
+        tabIndex={-1}
+        onClick={(e) => e.stopPropagation()}
+        style={{ position: 'relative' }}
+      >
+        <button
+          className="modal-close-x"
+          aria-label="닫기"
+          onClick={onClose}
+          type="button"
+        >
+          ×
+        </button>
+        <div style={{ height: 36 }} />
+        <h3 className="modal-title modal-title-gap">모니터링 대상 추가</h3>
         <form
           onSubmit={handleQuickAdd}
-          style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+            marginBottom: 36,
+          }}
         >
           <input
             name="userId"
             placeholder="ID"
             value={addSeniorData.userId}
-            onChange={(e) =>
-              setAddSeniorData({ ...addSeniorData, userId: e.target.value })
-            }
+            onChange={(e) => {
+              setAddSeniorData({ ...addSeniorData, userId: e.target.value });
+              if (message) setMessage(null);
+            }}
             autoComplete="username"
+            onFocus={() => message && setMessage(null)}
           />
           <input
             type="password"
             name="password"
             placeholder="비밀번호"
             value={addSeniorData.password}
-            onChange={(e) =>
-              setAddSeniorData({ ...addSeniorData, password: e.target.value })
-            }
+            onChange={(e) => {
+              setAddSeniorData({ ...addSeniorData, password: e.target.value });
+              if (message) setMessage(null);
+            }}
             autoComplete="new-password"
+            onFocus={() => message && setMessage(null)}
           />
-          <button className="btn-add" type="submit">
-            간편 추가
-          </button>
         </form>
-        <div style={{ margin: '16px 0', textAlign: 'center', color: '#888' }}>
-          또는
-        </div>
-        <div className="modal-actions">
-          <button className="btn-add" onClick={onClickAdd}>
-            신규 대상자 추가
+        {message && (
+          <div
+            className={`modal-message ${message.type === 'error' ? 'modal-message-error' : 'modal-message-success'}`}
+          >
+            {message.text}
+          </div>
+        )}
+        <div
+          className="modal-actions modal-actions-between modal-actions-right"
+          style={{ marginBottom: 8 }}
+        >
+          <button className="btn-create" onClick={onClickAdd} type="button">
+            새로 생성
           </button>
-          <button className="btn-cancel" onClick={onClose}>
-            취소
+          <button className="btn-add" type="button" onClick={handleQuickAdd}>
+            간편 추가
           </button>
         </div>
       </div>

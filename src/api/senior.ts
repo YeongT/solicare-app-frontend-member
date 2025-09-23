@@ -1,6 +1,19 @@
+import { SeniorDetailResponseBody } from '../types/api';
+
+/**
+ * 특정 시니어의 상세 프로필 정보를 조회하는 API
+ * @param seniorUuid - 시니어 UUID
+ */
+export const getSeniorDetail = (
+  seniorUuid: string
+): Promise<SeniorDetailResponseBody | null> => {
+  return apiClient.get(`/care/senior/${seniorUuid}`);
+};
+
 import { apiClient } from './apiClient';
 import {
   AddSeniorRequestBody,
+  CareSeniorBriefResponseBody,
   Senior,
   SeniorJoinRequestBody,
 } from '../types/api';
@@ -9,9 +22,11 @@ import {
  * 특정 회원이 모니터링하는 시니어 목록을 조회하는 API
  * @param memberUuid - 현재 로그인한 회원의 UUID
  */
-export const getSeniors = (memberUuid: string): Promise<Senior[] | null> => {
+export const getSeniors = (
+  memberUuid: string
+): Promise<CareSeniorBriefResponseBody[] | null> => {
   // 👇 템플릿 리터럴(``)을 사용해 URL 경로에 동적으로 uuid를 삽입합니다.
-  return apiClient.get(`/member/${memberUuid}/seniors`);
+  return apiClient.get(`/care/member/${memberUuid}/seniors`);
 };
 
 /**
@@ -33,5 +48,17 @@ export const addSenior = (
   memberUuid: string,
   seniorData: AddSeniorRequestBody
 ): Promise<Senior | null> => {
-  return apiClient.post(`/member/${memberUuid}/seniors`, seniorData);
+  return apiClient.post(`/care/member/${memberUuid}/seniors`, seniorData);
+};
+
+export const updateMonitoringStatus = async (
+  seniorUuid: string,
+  enabled: boolean
+): Promise<void> => {
+  // 실제 API 클라이언트를 사용하여 PATCH 요청을 보냅니다.
+  await apiClient.patch(`/care/senior/${seniorUuid}/monitoring`, null, {
+    params: {
+      enabled,
+    },
+  });
 };

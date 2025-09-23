@@ -1,3 +1,5 @@
+export {};
+/*
 export type Gender = 'MALE' | 'FEMALE' | 'OTHER';
 
 export interface Senior {
@@ -12,3 +14,4 @@ export interface Senior {
   note?: string;
   photo?: string;
 }
+*/
