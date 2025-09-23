@@ -1,3 +1,26 @@
+// 시니어 알림 정보
+export interface SeniorAlert {
+  uuid: string;
+  eventType: string;
+  timestamp: string;
+  isRead: boolean;
+}
+
+// 시니어 건강 데이터(측정값)
+export interface SeniorStat {
+  uuid: string;
+  timestamp: string;
+  heartRate: number;
+  temperature: number;
+}
+
+// 시니어 상세 정보 조회 응답 body
+export interface SeniorDetailResponseBody {
+  profile: Senior;
+  isMonitored: boolean;
+  alerts: SeniorAlert[];
+  stats: SeniorStat[];
+}
 // 서버 응답의 공통 구조
 export interface ApiResponse<T> {
   isSuccess: boolean;
@@ -13,9 +36,11 @@ export interface LoginRequestBody {
   password: string;
 }
 
+import { MemberProfile } from './member';
+
 // 로그인 API 응답의 body 타입
 export interface LoginResponseBody {
-  name: string;
+  profile: MemberProfile;
   token: string;
 }
 
@@ -35,13 +60,22 @@ export interface JoinResponseBody {
 
 // 시니어(모니터링 대상) 정보 타입
 export interface Senior {
-  userId: string;
+  // userId: string;  // uuid 부분 빠짐
   name: string;
   age: number;
   gender: 'MALE' | 'FEMALE';
   phoneNumber: string;
   address: string;
   note: string;
+}
+
+// 시니어 목록 조회시 받는 간략한 시니어 정보 타입
+export interface CareSeniorBriefResponseBody {
+  uuid: string;
+  name: string;
+  age: number;
+  gender: 'MALE' | 'FEMALE';
+  unreadAlertCount: number;
 }
 
 // 시니어 등록 요청 시 보낼 데이터 타입

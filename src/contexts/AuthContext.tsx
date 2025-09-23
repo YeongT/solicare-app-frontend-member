@@ -6,7 +6,13 @@ import React, {
   useState,
 } from 'react';
 import { join as apiJoin, login as apiLogin } from '../api/member';
-import { JoinRequestBody, LoginRequestBody } from '../types/api';
+import {
+  JoinRequestBody,
+  LoginRequestBody,
+  LoginResponseBody,
+} from '../types/api';
+import { getDeviceUuid } from '../utils/device';
+import { connectDeviceToMember } from '../api/device';
 import { deleteCookie, getCookie, setCookie } from '../utils/cookies';
 import { getJwtExpiration, getJwtUuid, isTokenExpired } from '../utils/jwt';
 
@@ -36,7 +42,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const token = getCookie('accessToken');
     if (token && !isTokenExpired(token)) {
       const uuid = getJwtUuid(token);
-      const name = getCookie('userName') || '사용자'; // 필요 시 프로필 조회 API로 실제 이름 가져오기
+      const name = getCookie('userName') || '사용자';
+      // email, phoneNumber는 쿠키에 저장하지 않으므로 빈 값으로 둠 (필요시 서버에서 프로필 조회 필요)
       if (uuid) {
         setUser({ name, uuid });
       }
@@ -45,26 +52,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const login = async (loginData: LoginRequestBody): Promise<boolean> => {
     try {
-      const responseBody = await apiLogin(loginData);
+      const responseBody: LoginResponseBody | null = await apiLogin(loginData);
       if (!responseBody) {
         throw new Error('로그인 응답에 body가 없습니다.');
       }
 
-      const { token, name } = responseBody;
+      const { token, profile } = responseBody;
       const uuid = getJwtUuid(token);
       const expires = getJwtExpiration(token);
 
       setCookie('accessToken', token, expires);
-      setCookie('userName', name, expires);
+      setCookie('userName', profile.name, expires);
 
       if (uuid) {
-        setUser({ name, uuid });
+        setUser({ name: profile.name, uuid });
+        // 디바이스 uuid가 쿠키에 있으면 서버에 연결 요청
+        const deviceUuid = getDeviceUuid();
+        if (deviceUuid) {
+          try {
+            console.log(`디바이스 uuid ${deviceUuid}로 멤버 ${uuid} 연결 시도`);
+            await connectDeviceToMember(uuid, deviceUuid);
+            // 연결 성공 시 추가 처리 필요시 여기에
+            console.log('디바이스-멤버 연결 성공');
+          } catch (err) {
+            // 연결 실패 시 무시 또는 로깅
+            console.error('디바이스-멤버 연결 실패', err);
+          }
+        }
       } else {
-        setUser({ name, uuid: '' });
+        setUser({ name: profile.name, uuid: '' });
       }
       return true;
     } catch (error) {
-      // console.error('Context 로그인 실패:', error); // 경고 방지: 주석 처리
       logout();
       if (error instanceof Error) {
         throw new Error(error.message || '로그인에 실패했습니다.');

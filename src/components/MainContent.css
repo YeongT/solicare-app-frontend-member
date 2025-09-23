@@ -22,7 +22,7 @@
   flex-direction: column;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 857px) {
   .content-grid {
     grid-template-columns: 1fr;
   }

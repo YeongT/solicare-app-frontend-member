@@ -1,3 +1,83 @@
+.modal-message {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border 0.2s;
+}
+.modal-message-error {
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+}
+.modal-message-success {
+  color: #065f46;
+  background: #d1fae5;
+  border: 1px solid #a7f3d0;
+}
+.modal-close-x {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #888;
+  cursor: pointer;
+  z-index: 10;
+  padding: 0 6px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.modal-close-x:hover {
+  color: #222;
+}
+.modal-close-x {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #888;
+  cursor: pointer;
+  z-index: 10;
+  padding: 0 6px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.modal-close-x:hover {
+  color: #222;
+}
+.modal-actions-between {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 8px;
+}
+.btn-create {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 6px 12px;
+}
+.btn-create:hover {
+  background-color: #45a049;
+}
+.modal-card-large {
+  min-width: 400px;
+  max-width: 99vw;
+  padding-top: 90px;
+  padding-bottom: 72px;
+}
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -27,8 +107,22 @@
 
 .modal-title {
   text-align: center;
-  margin: 0 0 8px 0;
-  font-size: 1.3rem;
+  margin: 0 0 28px 0;
+  font-size: 1.45rem;
+}
+.modal-title-gap {
+  margin-bottom: 36px !important;
+}
+
+.modal-or-text {
+  margin: 20px 0 20px 0;
+  text-align: center;
+  color: #888;
+  font-size: 1.08rem;
+  letter-spacing: 0.04em;
+}
+.modal-or-text-tight {
+  margin: 20px 0 20px 0 !important;
 }
 
 .modal-card input,
@@ -49,8 +143,19 @@
 
 .modal-actions {
   display: flex;
-  justify-content: flex-end;
   gap: 8px;
+}
+.modal-actions-bottom-right {
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin-top: 12px;
+}
+.btn-add-small {
+  font-size: 0.92rem;
+  padding: 5px 16px;
+  border-radius: 6px;
+  min-width: 60px;
+  margin-bottom: 0;
 }
 
 .btn-add {
