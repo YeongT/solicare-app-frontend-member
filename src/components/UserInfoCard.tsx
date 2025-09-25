@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './UserInfoCard.css';
 import InfoFrame from './userInfo/InfoFrame';
 import { useAuth } from '../contexts/AuthContext';
@@ -7,18 +7,10 @@ import AddSeniorEntryModal from './AddSeniorEntryModal';
 import {
   AddSeniorRequestBody,
   CareSeniorBriefResponseBody,
-  Senior,
   SeniorDetailResponseBody,
   SeniorJoinRequestBody,
 } from '../types/api';
-import {
-  addSenior,
-  getSeniors,
-  joinSenior,
-  getSeniorDetail,
-} from '../api/senior';
-import { on } from 'events';
-
+import { addSenior, joinSenior } from '../api/senior';
 
 interface UserInfoCardProps {
   seniors: CareSeniorBriefResponseBody[];
@@ -141,7 +133,6 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({
       }
     }
   };
-
 
   // user가 없거나 uuid가 없으면 아무것도 렌더링하지 않음 (ProtectedRoute에서 로그인 체크)
   if (!user?.uuid) {

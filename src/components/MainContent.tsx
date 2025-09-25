@@ -1,19 +1,27 @@
-import React, { use, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './MainContent.css';
 import UserInfoCard from './UserInfoCard';
 import HealthMetricsCard from './HealthMetricsCard';
 import RecentAlertsCard from './RecentAlertsCard';
 
-import {useAuth} from '../contexts/AuthContext';
-import { getSeniors, getSeniorDetail, updateMonitoringStatus } from '../api/senior';
-import { CareSeniorBriefResponseBody, SeniorDetailResponseBody } from '../types/api';
-
+import { useAuth } from '../contexts/AuthContext';
+import {
+  getSeniorDetail,
+  getSeniors,
+  updateMonitoringStatus,
+} from '../api/senior';
+import {
+  CareSeniorBriefResponseBody,
+  SeniorDetailResponseBody,
+} from '../types/api';
 
 const MainContent: React.FC = () => {
   const { user } = useAuth();
   const [seniors, setSeniors] = useState<CareSeniorBriefResponseBody[]>([]);
-  const [selectedSenior, setSelectedSenior] = useState<CareSeniorBriefResponseBody | null>(null);
-  const [seniorDetail, setSeniorDetail] = useState<SeniorDetailResponseBody | null>(null);
+  const [selectedSenior, setSelectedSenior] =
+    useState<CareSeniorBriefResponseBody | null>(null);
+  const [seniorDetail, setSeniorDetail] =
+    useState<SeniorDetailResponseBody | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -35,51 +43,53 @@ const MainContent: React.FC = () => {
   }, [fetchSeniors]);
 
   // 특정 시니어의 상세 정보를 불러오는 로직
-  const fetchSeniorDetail = useCallback(async (isRefresh = false) => {
-    if (!selectedSenior?.uuid) {
-      setSeniorDetail(null); // 선택된 시니어가 없으면 상세 정보 초기화
-      return;
-    }
-    
-    if (!isRefresh) {
-      setIsLoading(true);
-    } else {
-      setIsUpdating(true);
-    }
-
-    try {
-      // setSeniorDetail(null); // 로딩 중에 이전 데이터 숨기기
-      const detail = await getSeniorDetail(selectedSenior.uuid);
-      const newDetailData = await getSeniorDetail(selectedSenior.uuid); // 최신 데이터 재요청
-      setSeniorDetail(prevDetail => {
-        if (!prevDetail) return newDetailData;
-
-        return {
-          ...prevDetail, ...newDetailData,
-        };
-      });
-      // console.log('로딩된 시니어 상세 정보:', detail);
-    } catch (err) {
-      console.error('시니어 상세 정보 로딩 실패:', err);
-      setSeniorDetail(null);
-    } finally {
-      if(!isRefresh) {
-        setIsLoading(false);
-      } else {
-        setIsUpdating(false);
+  const fetchSeniorDetail = useCallback(
+    async (isRefresh = false) => {
+      if (!selectedSenior?.uuid) {
+        setSeniorDetail(null); // 선택된 시니어가 없으면 상세 정보 초기화
+        return;
       }
-    }
-  }, [selectedSenior]);
+
+      if (!isRefresh) {
+        setIsLoading(true);
+      } else {
+        setIsUpdating(true);
+      }
+
+      try {
+        // setSeniorDetail(null); // 로딩 중에 이전 데이터 숨기기
+        const newDetailData = await getSeniorDetail(selectedSenior.uuid); // 최신 데이터 재요청
+        setSeniorDetail((prevDetail) => {
+          if (!prevDetail) return newDetailData;
+
+          return {
+            ...prevDetail,
+            ...newDetailData,
+          };
+        });
+        // console.log('로딩된 시니어 상세 정보:', detail);
+      } catch (err) {
+        console.error('시니어 상세 정보 로딩 실패:', err);
+        setSeniorDetail(null);
+      } finally {
+        if (!isRefresh) {
+          setIsLoading(false);
+        } else {
+          setIsUpdating(false);
+        }
+      }
+    },
+    [selectedSenior]
+  );
 
   useEffect(() => {
-    if(selectedSenior?.uuid) {
+    if (selectedSenior?.uuid) {
       fetchSeniorDetail(false);
     } else {
       setSeniorDetail(null);
     }
   }, [selectedSenior, fetchSeniorDetail]);
-  
-  
+
   // 모니터링 활성화/비활성화에 따른 자동 새로고침 설정
   useEffect(() => {
     if (selectedSenior) {
@@ -90,7 +100,7 @@ const MainContent: React.FC = () => {
   }, [selectedSenior, fetchSeniorDetail]);
 
   useEffect(() => {
-    if (!seniorDetail?.isMonitored){
+    if (!seniorDetail?.isMonitored) {
       return;
     }
 

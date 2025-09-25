@@ -23,7 +23,6 @@
   overflow-y: auto;
 }
 
-
 .alert-item {
   display: flex;
   flex-direction: column;
@@ -33,7 +32,9 @@
   background-color: #f8f9fa;
   border-radius: 8px;
   border-left: 4px solid #ff4444;
-  transition: background 0.2s, border-color 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
   gap: 0.35em;
 }
 
@@ -64,12 +65,11 @@
   font-size: 0.95rem;
   font-weight: bold;
   margin-left: 1px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   vertical-align: middle;
   transform: translateY(-9px);
   text-align: center;
 }
-
 
 .alert-type {
   font-weight: 500;

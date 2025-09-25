@@ -1,6 +1,57 @@
-# Getting Started with Create React App
+# SoliCare Frontend Member Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the frontend application for SoliCare members, built with React, TypeScript, and Firebase Cloud Messaging for real-time notifications.
+
+## Project Overview
+
+SoliCare is a health monitoring platform that allows members to track and manage the health status of seniors. This frontend application provides the member interface with features including:
+
+- User authentication (login/signup)
+- Dashboard with senior profiles
+- Health metrics monitoring
+- Real-time alerts via Firebase Cloud Messaging
+- Senior management functionality
+
+## Technology Stack
+
+- **Frontend Framework**: React 19 with TypeScript
+- **Routing**: React Router v7
+- **Styling**: CSS with component-based architecture
+- **State Management**: React Context API
+- **API Communication**: Axios
+- **Charts/Visualization**: Recharts
+- **Notifications**: Firebase Cloud Messaging (FCM)
+- **Development Tools**: ESLint, Prettier
+- **Mock API**: JSON Server
+
+## Prerequisites
+
+Before running this project, make sure you have:
+
+- Node.js (v16 or higher)
+- Yarn package manager
+- Firebase project with Cloud Messaging enabled
+
+## Environment Setup
+
+Create a `.env` file in the root directory with the following Firebase configuration:
+
+```
+REACT_APP_FIREBASE_API_KEY=your_api_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_auth_domain
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+REACT_APP_FIREBASE_APP_ID=your_app_id
+```
+
+## Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   yarn install
+   ```
 
 ## Available Scripts
 
@@ -8,39 +59,80 @@ In the project directory, you can run:
 
 ### `yarn start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Runs the app in development mode at [http://localhost:3000](http://localhost:3000).
 
 ### `yarn build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Builds the app for production to the `build` folder, including the Firebase messaging service worker.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### `yarn build:sw`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Builds only the Firebase messaging service worker using esbuild.
 
-### `yarn eject`
+### `yarn test`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Launches the test runner in interactive watch mode.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### `yarn mock-server`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Starts a mock API server using JSON Server at http://localhost:3001.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### `yarn format`
 
-## Learn More
+Formats code using Prettier.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### `yarn lint`
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Runs ESLint to check for code quality issues.
+
+### `yarn serve`
+
+Serves the production build locally to test the built application.
+
+## Firebase Cloud Messaging Integration
+
+This application integrates Firebase Cloud Messaging (FCM) for real-time notifications:
+
+1. **Service Worker**: Handles background notifications when the app is not active
+2. **Foreground Notifications**: Managed via the app's notification system when active
+3. **Token Registration**: Automatically registers FCM tokens with the backend
+
+The service worker is built using esbuild and is automatically included in the build process.
+
+## Project Structure
+
+```
+src/
+  ├── api/            # API client and endpoint handlers
+  ├── apiMock/        # Mock data for development
+  ├── components/     # Reusable UI components
+  ├── contexts/       # React context providers (Auth)
+  ├── pages/          # Page components
+  ├── styles/         # Global and page-specific styles
+  ├── types/          # TypeScript type definitions
+  ├── utils/          # Utility functions and helpers
+  ├── App.tsx         # Main application component
+  ├── index.tsx       # Application entry point
+  └── firebase-messaging-sw.ts  # Firebase messaging service worker
+```
+
+## Contributing
+
+1. Follow the code style guidelines (enforced by ESLint and Prettier)
+2. Write unit tests for new functionality
+3. Make sure all tests pass before submitting pull requests
+
+## Troubleshooting
+
+### Firebase Integration
+
+If you encounter issues with Firebase integration:
+- Ensure your Firebase configuration is correct in `.env`
+- Check that the Firebase service worker is building correctly
+- Verify that your Firebase project has Cloud Messaging enabled
+
+### TypeScript Errors
+
+For TypeScript errors related to Firebase:
+- The project includes custom type definitions in `src/types/firebase.d.ts`
+- Ensure you're using Firebase v9.22.0 as specified in the dependencies

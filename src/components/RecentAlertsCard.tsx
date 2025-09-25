@@ -1,5 +1,5 @@
 // import React from 'react';
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import './RecentAlertsCard.css';
 import { SeniorDetailResponseBody, SeniorAlert } from '../types/api';
 
@@ -7,7 +7,9 @@ interface RecentAlertsCardProps {
   seniorDetail: SeniorDetailResponseBody;
 }
 
-const RecentAlertsCard: React.FC<RecentAlertsCardProps> = ({ seniorDetail }) => {
+const RecentAlertsCard: React.FC<RecentAlertsCardProps> = ({
+  seniorDetail,
+}) => {
   const [alerts, setAlerts] = useState<SeniorAlert[]>([]);
 
   // 초기 데이터 생성
@@ -45,11 +47,12 @@ const RecentAlertsCard: React.FC<RecentAlertsCardProps> = ({ seniorDetail }) => 
 
   return (
     <div className="recent-alerts-card">
-      <div className="card-header" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div
+        className="card-header"
+        style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+      >
         <h3 style={{ margin: 0 }}>최근 알림</h3>
-        {unreadCount > 0 && (
-          <span className="alert-badge">{badgeCount}</span>
-        )}
+        {unreadCount > 0 && <span className="alert-badge">{badgeCount}</span>}
       </div>
       <div className="alerts-list">
         {alerts.map((alert, index) => (

@@ -21,4 +21,3 @@ export const join = (
 ): Promise<JoinResponseBody | null> => {
   return apiClient.post('/member/join', joinData);
 };
-
