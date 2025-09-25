@@ -143,6 +143,7 @@ const MainContent: React.FC = () => {
             onSeniorsUpdate={fetchSeniors} // 시니어 추가/삭제 후 목록을 새로고침하기 위한 함수
             isMonitored={seniorDetail?.isMonitored || false}
             onToggleMonitoring={handleMonitoringToggle}
+            isLoading={isLoading}
           />
           {selectedSenior && seniorDetail && !isLoading && (
             <HealthMetricsCard seniorDetail={seniorDetail} />

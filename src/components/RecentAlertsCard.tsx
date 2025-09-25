@@ -9,7 +9,6 @@ interface RecentAlertsCardProps {
 
 const RecentAlertsCard: React.FC<RecentAlertsCardProps> = ({ seniorDetail }) => {
   const [alerts, setAlerts] = useState<SeniorAlert[]>([]);
-  // const [isLoading, setIsLoading] = useState(false);
 
   // 초기 데이터 생성
   useEffect(() => {

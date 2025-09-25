@@ -50,27 +50,6 @@ const HealthMetricsCard: React.FC<HealthMetricsCardProps> = ({ seniorDetail }) =
     // console.log('임시 시니어 상태 데이터:', data);
   }, [seniorDetail]);
 
-/*
-  // 1분마다 새 데이터 추가
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      const newPoint: SeniorStat = {
-        uuid: '',
-        timestamp: now.toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        }),
-        heartRate: 60 + Math.floor(Math.random() * 40),
-        temperature: parseFloat((36 + Math.random() * 1.5).toFixed(1)),
-      };
-
-      setData((prev) => [newPoint, ...prev].slice(0, MAX_POINTS));
-    }, UPDATE_INTERVAL);
-    return () => clearInterval(interval);
-  }, []);
-*/
   return (
     <div className="health-metrics-card">
       <div className="metrics-container">
