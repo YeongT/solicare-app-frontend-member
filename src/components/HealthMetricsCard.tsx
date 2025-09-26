@@ -104,8 +104,15 @@ const HealthMetricsCard: React.FC<HealthMetricsCardProps> = ({
                 <YAxis
                   domain={[35, 39]}
                   label={{ value: '°C', angle: -90, position: 'insideLeft' }}
+                  tickFormatter={(value) => typeof value === 'number' ? value.toFixed(1) : value}
                 />
-                <Tooltip />
+                <Tooltip
+                  formatter={(value, name) =>
+                    name === 'temperature' && typeof value === 'number'
+                      ? [`${value.toFixed(1)}`, '체온']
+                      : [value, name]
+                  }
+                />
                 <Line
                   type="monotone"
                   dataKey="temperature"

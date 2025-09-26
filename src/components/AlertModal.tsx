@@ -15,13 +15,24 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, eventData, sen
     return null;
   }
 
+  // eventType을 한글 메시지로 매핑
+  const eventTypeMap: { [key: string]: string } = {
+    FALL_DETECTED: '낙상 감지',
+    CAMERA_BATTERY_LOW: '카메라 배터리 부족',
+    CAMERA_DISCONNECTED: '카메라 연결 끊김',
+    WEARABLE_BATTERY_LOW: '웨어러블 기기 배터리 부족',
+    WEARABLE_DISCONNECTED: '웨어러블 기기 연결 끊김',
+    INACTIVITY_ALERT: '장시간 움직임 없음',
+  };
+  const eventTypeText = eventTypeMap[eventData.eventType] || eventData.eventType;
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div className="alert-icon">!</div>
           {/* 이벤트 타입은 eventData에서 가져옴 */}
-          <h2 className="modal-title">{eventData.eventType}</h2>
+          <h2 className="modal-title">{eventTypeText}</h2>
           {/* 타임스탬프도 eventData에서 가져옴 */}
           <p className="modal-timestamp">{new Date(eventData.timestamp).toLocaleString()}</p>
         </div>

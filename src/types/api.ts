@@ -99,6 +99,9 @@ export interface AddSeniorRequestBody {
 export interface EventDetailResponseBody {
   uuid: string;
   eventType: string; // 예: "낙상 감지", "비상 호출"
+  monitorMode: string; 
   timestamp: string; // 예: "2025-09-26T12:30:00Z"
-  // ... 기타 이벤트와 직접적으로 관련된 정보 ...
+  base64Image : string; // 이벤트와 관련된 이미지 (base64 인코딩)
+  isRead: boolean;
+  isDismissed: boolean;
 }

@@ -90,7 +90,25 @@ const MainContent: React.FC = () => {
     return () => clearInterval(interval);
   }, [seniorDetail?.isMonitored, fetchSeniorDetail]);
 
-  const handleMonitoringToggle = async () => { /* ... 이전과 동일 ... */ };
+  const handleMonitoringToggle = async () => {
+    if (!selectedSenior) return;
+
+    const currentStatus = seniorDetail?.isMonitored || false;
+    const newStatus = !currentStatus;
+
+    try {
+      await updateMonitoringStatus(selectedSenior.uuid, newStatus);
+      setSeniorDetail((prev) =>
+        prev ? { ...prev, isMonitored: newStatus } : prev
+      );
+      console.log(
+        `시니어 ${selectedSenior.name} 모니터링 상태 변경: ${newStatus}`
+      );
+    } catch (error) {
+      console.error('모니터링 상태 변경 실패:', error);
+    }
+  };
+
 
   // UserInfoCard에서 시니어를 선택하는 핸들러
   const handleSelectSenior = (senior: CareSeniorBriefResponseBody | null) => {
@@ -135,7 +153,7 @@ const MainContent: React.FC = () => {
 
       const fetchAndShowModal = async () => {
         try {
-          const fetchedEventData = await getEventDetail(pendingNotification.eventUuid);
+          const fetchedEventData = await getEventDetail(pendingNotification.seniorUuid, pendingNotification.eventUuid);
           setModalEventData(fetchedEventData);
           setIsAlertModalOpen(true);
         } catch (error) {

@@ -17,7 +17,7 @@ const RecentAlertsCard: React.FC<RecentAlertsCardProps> = ({
   // 초기 데이터 생성
   useEffect(() => {
     if (seniorDetail && seniorDetail.alerts.length > 0) {
-      setAlerts(seniorDetail.alerts.reverse());
+      setAlerts(seniorDetail.alerts); // reverse() 뺌
       return;
     }
     const initialData: SeniorAlert[] = [
@@ -49,12 +49,12 @@ const RecentAlertsCard: React.FC<RecentAlertsCardProps> = ({
 
   // eventType을 한글 메시지로 매핑
   const eventTypeMap: { [key: string]: string } = {
-    FALL_DETECTED: '낙상이 감지되었습니다.',
-    CAMERA_BATTERY_LOW: '카메라 배터리가 부족합니다.',
-    CAMERA_DISCONNECTED: '카메라 연결이 끊어졌습니다.',
-    WEARABLE_BATTERY_LOW: '웨어러블 기기 배터리가 부족합니다.',
-    WEARABLE_DISCONNECTED: '웨어러블 기기 연결이 끊어졌습니다.',
-    INACTIVITY_ALERT: '장시간 움직임이 감지되지 않습니다.',
+    FALL_DETECTED: '낙상 감지',
+    CAMERA_BATTERY_LOW: '카메라 배터리 부족',
+    CAMERA_DISCONNECTED: '카메라 연결 끊김',
+    WEARABLE_BATTERY_LOW: '웨어러블 기기 배터리 부족',
+    WEARABLE_DISCONNECTED: '웨어러블 기기 연결 끊김',
+    INACTIVITY_ALERT: '장시간 움직임 없음',
   };
 
   return (
