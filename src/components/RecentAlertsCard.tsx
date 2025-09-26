@@ -5,10 +5,12 @@ import { SeniorDetailResponseBody, SeniorAlert } from '../types/api';
 
 interface RecentAlertsCardProps {
   seniorDetail: SeniorDetailResponseBody;
+  className?: string;
 }
 
 const RecentAlertsCard: React.FC<RecentAlertsCardProps> = ({
   seniorDetail,
+  className,
 }) => {
   const [alerts, setAlerts] = useState<SeniorAlert[]>([]);
 
@@ -46,7 +48,7 @@ const RecentAlertsCard: React.FC<RecentAlertsCardProps> = ({
   const badgeCount = unreadCount > 99 ? '99+' : unreadCount;
 
   return (
-    <div className="recent-alerts-card">
+    <div className={`recent-alerts-card${className ? ` ${className}` : ''}`}>
       <div
         className="card-header"
         style={{ display: 'flex', alignItems: 'center', gap: 8 }}

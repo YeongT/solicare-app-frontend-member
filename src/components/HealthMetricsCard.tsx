@@ -13,6 +13,7 @@ import { SeniorDetailResponseBody, SeniorStat } from '../types/api';
 
 interface HealthMetricsCardProps {
   seniorDetail?: SeniorDetailResponseBody | null;
+  className?: string;
 }
 
 const INITIAL_POINTS = 10; // 초기 데이터 개수
@@ -20,6 +21,7 @@ const UPDATE_INTERVAL = 60000; // 1분 단위
 
 const HealthMetricsCard: React.FC<HealthMetricsCardProps> = ({
   seniorDetail,
+  className,
 }) => {
   const [data, setData] = useState<SeniorStat[]>([]);
 
@@ -52,7 +54,7 @@ const HealthMetricsCard: React.FC<HealthMetricsCardProps> = ({
   }, [seniorDetail]);
 
   return (
-    <div className="health-metrics-card">
+    <div className={`health-metrics-card${className ? ` ${className}` : ''}`}>
       <div className="metrics-container">
         {/* ❤️ 심박수 */}
         <div className="metric-item">

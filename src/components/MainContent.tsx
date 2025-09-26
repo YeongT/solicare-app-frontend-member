@@ -24,6 +24,15 @@ const MainContent: React.FC = () => {
     useState<SeniorDetailResponseBody | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 857);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 857);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // 시니어 목록을 불러오는 로직
   const fetchSeniors = useCallback(async () => {
@@ -150,17 +159,20 @@ const MainContent: React.FC = () => {
             selectedSenior={selectedSenior}
             onSelectSenior={handleSelectSenior}
             seniorDetail={seniorDetail}
-            onSeniorsUpdate={fetchSeniors} // 시니어 추가/삭제 후 목록을 새로고침하기 위한 함수
+            onSeniorsUpdate={fetchSeniors}
             isMonitored={seniorDetail?.isMonitored || false}
             onToggleMonitoring={handleMonitoringToggle}
             isLoading={isLoading}
           />
           {selectedSenior && seniorDetail && !isLoading && (
-            <HealthMetricsCard seniorDetail={seniorDetail} />
+            <>
+              {isMobile && <RecentAlertsCard seniorDetail={seniorDetail} />}
+              <HealthMetricsCard seniorDetail={seniorDetail} />
+            </>
           )}
         </div>
         <div className="right-column">
-          {selectedSenior && seniorDetail && !isLoading && (
+          {selectedSenior && seniorDetail && !isLoading && !isMobile && (
             <RecentAlertsCard seniorDetail={seniorDetail} />
           )}
         </div>

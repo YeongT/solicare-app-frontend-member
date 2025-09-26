@@ -23,84 +23,78 @@ function App() {
   useEffect(() => {
     // FCM 설정 및 메시지 수신 로직을 처리하는 함수
     const setupFCM = async () => {
-      // 1. 서비스 워커 등록
-      if ('serviceWorker' in navigator) {
-        try {
-          // public 폴더의 서비스 워커 파일을 등록합니다.
-          const registration = await navigator.serviceWorker.register(
-            '/firebase-messaging-sw.js'
-          );
-          // Service Worker registered successfully
-        } catch (error) {
-          // Service Worker registration failed
-        }
-      } else {
-        // This browser does not support service workers
-        return; // Service Worker를 지원하지 않으면 FCM 설정을 중단
-      }
-
-      // 2. 알림 권한 요청 및 토큰 발급
-      if (!('Notification' in window)) {
-        // This browser does not support notifications
+      // 1. 브라우저가 서비스 워커와 알림을 지원하는지 확인
+      if (!('serviceWorker' in navigator) || !('Notification' in window)) {
+        console.warn('[FCM] Push messaging is not supported in this browser.');
         return;
       }
 
-      // Requesting permission...
+      // 2. 알림 권한 요청
       const permission = await Notification.requestPermission();
+      console.log('[FCM] Notification permission:', permission);
 
       if (permission === 'granted') {
-        // Notification permission granted
-
         try {
           // Firebase Messaging 인스턴스 가져오기
           const messagingInstance = await getMessagingInstance();
-
-          // 브라우저가 FCM을 지원하지 않는 경우
           if (!messagingInstance) {
-            // Firebase Messaging is not supported in this browser
+            console.error('[FCM] Messaging instance is not available.');
             return;
           }
 
+          // --- 🔽 이 부분이 핵심 수정/개선 사항입니다 🔽 ---
+          console.log('[FCM] Registering service worker for token...');
+          // 서비스 워커를 등록하고 그 결과를 getToken에 바로 사용합니다.
+          const registration = await navigator.serviceWorker.register(
+            '/firebase-messaging-sw.js'
+          );
+
+          console.log('[FCM] Getting FCM token...');
           const currentToken = await getToken(messagingInstance, {
             vapidKey:
               'BK3lEzGLe25ICjp5er8uIxSe0OyntQ1CvYPHUiM63LzN_pQOsJHhwdFbcC9T2SA-TV6GLL2N3CN1ED4PULwNnkk',
+            // 명시적으로 등록된 서비스 워커를 사용하도록 전달합니다.
+            serviceWorkerRegistration: registration,
           });
+          // --- 🔼 여기까지 수정/개선 완료 🔼 ---
 
           if (currentToken) {
-            // FCM Registration Token received
+            console.log('[FCM] Token received:', currentToken);
             // FCM 토큰을 서버에 등록하고 디바이스 uuid를 쿠키에 저장
             try {
               const device = await registerFcmToken(currentToken);
-              // registerFcmToken result received
+              console.log('[FCM] registerFcmToken result:', device);
 
               if (device?.uuid) {
                 saveDeviceUuid(device.uuid);
-                // 디바이스 uuid 저장 완료
+                console.log('[FCM] Device uuid saved:', device.uuid);
               } else {
-                // 디바이스 uuid가 응답에 없습니다.
+                console.warn('[FCM] Device uuid not found in response');
               }
             } catch (err) {
-              // FCM 토큰 등록/디바이스 uuid 저장 실패
+              console.error(
+                '[FCM] Failed to register FCM token or save device uuid',
+                err
+              );
             }
           } else {
-            // No registration token available. Request permission to generate one.
+            console.warn(
+              '[FCM] No registration token available. Request permission to generate one.'
+            );
           }
 
           // 3. 포그라운드 메시지 수신 리스너 설정
           const unsubscribeListener = onMessage(
             messagingInstance,
             (payload: MessagePayload) => {
-              // Foreground message received
+              console.log('[FCM] Foreground message received:', payload);
 
-              // 포그라운드 상태에서는 직접 알림을 생성해야 합니다.
               const notificationTitle =
                 payload.notification?.title || '새 알림';
               const notificationOptions = {
                 body: payload.notification?.body,
-                icon: '/logo192.png', // 알림에 표시할 아이콘
+                icon: '/logo192.png',
               };
-
-              // new Notification API를 사용해 알림을 띄웁니다.
               new Notification(notificationTitle, notificationOptions);
             }
           );
@@ -112,21 +106,20 @@ function App() {
             }
           };
         } catch (err) {
-          // An error occurred while setting up Firebase Messaging
+          console.error('[FCM] An error occurred while setting up FCM', err);
         }
       } else {
-        // Unable to get permission to notify
+        console.warn('[FCM] Unable to get permission to notify.');
       }
     };
 
     setupFCM();
 
-    // Return a named function instead of an empty arrow function to satisfy ESLint
-    return function cleanupFCM() {
-      // No cleanup needed outside setupFCM
-      // The actual listener cleanup happens inside setupFCM
+    // useEffect의 cleanup 함수
+    return () => {
+      // setupFCM 내부에서 비동기적으로 리스너 cleanup이 처리됩니다.
     };
-  }, []); // 빈 배열을 전달하여 컴포넌트가 마운트될 때 한 번만 실행되도록 합니다.
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
 
   return (
     <Router>
@@ -146,7 +139,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            {/* 404 페이지 - 존재하지 않는 경로는 시작 페이지로 리다이렉트 */}
             <Route path="*" element={<Navigate to="/start" replace />} />
           </Routes>
         </div>

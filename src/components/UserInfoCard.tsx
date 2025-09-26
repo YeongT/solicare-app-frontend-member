@@ -149,6 +149,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          position: 'relative',
         }}
       >
         <h3
@@ -161,14 +162,20 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({
         </h3>
 
         {selectedSenior && seniorDetail && !isLoading && (
-          <>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              marginLeft: 16,
+            }}
+          >
             <span
               style={{
-                marginLeft: 16,
                 fontSize: '1rem',
                 color: '#666',
                 position: 'relative',
-                top: '-8px',
+                top: '-2px',
               }}
             >
               모니터링 활성화
@@ -176,7 +183,6 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({
             <button
               className="monitoring-toggle-btn"
               style={{
-                marginLeft: 8,
                 padding: '0.3em 1.2em',
                 borderRadius: 20,
                 border: 'none',
@@ -187,26 +193,60 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({
                 cursor: 'pointer',
                 transition: 'all 0.2s',
                 position: 'relative',
-                top: '-8px',
+                top: '-2px',
               }}
               onClick={onToggleMonitoring}
             >
               {isMonitored ? 'ON' : 'OFF'}
             </button>
-          </>
+          </div>
         )}
         {isDropdownOpen && (
-          <div className="dropdown-menu">
-            <div className="dropdown-search">
+          <div
+            className="dropdown-menu"
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: '100%',
+              zIndex: 10,
+              minWidth: '220px',
+              marginTop: 16,
+            }}
+          >
+            <div
+              className="dropdown-search"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                minWidth: 0,
+                flexWrap: 'nowrap',
+                overflow: 'hidden',
+              }}
+            >
               <input
                 type="text"
                 placeholder="검색"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
               />
               <button
                 className="add-btn"
                 onClick={() => setIsEntryModalOpen(true)}
+                style={{
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                  minWidth: 48,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
               >
                 추가
               </button>

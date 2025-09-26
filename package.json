@@ -24,7 +24,7 @@
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "yarn build:sw && react-scripts start",
     "build": "yarn build:sw && react-scripts build",
     "build:sw": "esbuild src/firebase-messaging-sw.ts --bundle --outfile=public/firebase-messaging-sw.js",
     "test": "react-scripts test",
