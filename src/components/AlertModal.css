@@ -1,0 +1,115 @@
+/* 전체 화면을 덮는 반투명 배경 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* 모달창 본문 */
+.modal-content {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  width: 380px;
+  text-align: center;
+  font-family: 'Pretendard', sans-serif; /* Pretendard 폰트나 시스템 기본 폰트 사용 */
+}
+
+/* 헤더 영역 */
+.modal-header {
+  margin-bottom: 20px;
+}
+
+.alert-icon {
+  width: 60px;
+  height: 60px;
+  background-color: #EF5350; /* Red color */
+  border-radius: 50%;
+  color: white;
+  font-size: 36px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 16px;
+}
+
+.modal-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 8px;
+}
+
+.modal-timestamp {
+  font-size: 16px;
+  color: #EF5350;
+  margin: 0;
+}
+
+/* 정보 영역 */
+.modal-body {
+  text-align: left;
+  margin: 20px 0;
+  color: #555;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+}
+
+.info-item:first-child {
+  margin-bottom: 12px;
+}
+
+.info-item svg {
+  flex-shrink: 0;
+}
+
+/* 구분선 */
+.divider {
+  border: none;
+  border-top: 1px solid #EAEAEA;
+}
+
+/* 버튼 영역 */
+.modal-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+}
+
+.modal-button {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.modal-button:hover {
+  opacity: 0.85;
+}
+
+.confirm-button {
+  background-color: #29B6F6; /* Light blue */
+}
+
+.close-button {
+  background-color: #EF5350; /* Red */
+}

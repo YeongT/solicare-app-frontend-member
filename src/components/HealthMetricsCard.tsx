@@ -13,6 +13,7 @@ import { SeniorDetailResponseBody, SeniorStat } from '../types/api';
 
 interface HealthMetricsCardProps {
   seniorDetail?: SeniorDetailResponseBody | null;
+  className?: string;
 }
 
 const INITIAL_POINTS = 10; // 초기 데이터 개수
@@ -20,6 +21,7 @@ const UPDATE_INTERVAL = 60000; // 1분 단위
 
 const HealthMetricsCard: React.FC<HealthMetricsCardProps> = ({
   seniorDetail,
+  className,
 }) => {
   const [data, setData] = useState<SeniorStat[]>([]);
 
@@ -51,29 +53,8 @@ const HealthMetricsCard: React.FC<HealthMetricsCardProps> = ({
     // console.log('임시 시니어 상태 데이터:', data);
   }, [seniorDetail]);
 
-  /*
-  // 1분마다 새 데이터 추가
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      const newPoint: SeniorStat = {
-        uuid: '',
-        timestamp: now.toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        }),
-        heartRate: 60 + Math.floor(Math.random() * 40),
-        temperature: parseFloat((36 + Math.random() * 1.5).toFixed(1)),
-      };
-
-      setData((prev) => [newPoint, ...prev].slice(0, MAX_POINTS));
-    }, UPDATE_INTERVAL);
-    return () => clearInterval(interval);
-  }, []);
-*/
   return (
-    <div className="health-metrics-card">
+    <div className={`health-metrics-card${className ? ` ${className}` : ''}`}>
       <div className="metrics-container">
         {/* ❤️ 심박수 */}
         <div className="metric-item">
@@ -123,8 +104,15 @@ const HealthMetricsCard: React.FC<HealthMetricsCardProps> = ({
                 <YAxis
                   domain={[35, 39]}
                   label={{ value: '°C', angle: -90, position: 'insideLeft' }}
+                  tickFormatter={(value) => typeof value === 'number' ? value.toFixed(1) : value}
                 />
-                <Tooltip />
+                <Tooltip
+                  formatter={(value, name) =>
+                    name === 'temperature' && typeof value === 'number'
+                      ? [`${value.toFixed(1)}`, '체온']
+                      : [value, name]
+                  }
+                />
                 <Line
                   type="monotone"
                   dataKey="temperature"

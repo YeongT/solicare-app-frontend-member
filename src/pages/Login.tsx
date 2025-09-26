@@ -74,28 +74,6 @@ const Login: React.FC = () => {
     } finally {
       setLoading(false);
     }
-    /*
-    try {
-      const res = await apiClient.post('/login', form);
-      const output = res.data.response;       // MemberLoginOutput
-      if (output.status === 'SUCCESS') {
-        const { token, name } = output.response;
-        login(token, name);                   // Context에 저장
-        navigate('/dashboard');
-      } else if (output.status === 'USER_NOT_FOUND') {
-        alert('사용자를 찾을 수 없습니다.');
-      } else if (output.status === 'INVALID_PASSWORD') {
-        alert('비밀번호가 잘못되었습니다.');
-      } else {
-        alert('로그인 실패');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('서버 오류 발생');
-    } finally {
-      setLoading(false);
-    }
-    */
   };
 
   return (

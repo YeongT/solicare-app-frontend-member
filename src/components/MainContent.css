@@ -11,10 +11,18 @@
   align-items: start;
 }
 
+
 .left-column {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.health-metrics-card-order {
+  order: 2;
+}
+.recent-alerts-card-order {
+  order: 1;
 }
 
 .right-column {
@@ -29,5 +37,12 @@
 
   .main-content {
     padding: 1rem;
+  }
+
+  .health-metrics-card-order {
+    order: 2;
+  }
+  .recent-alerts-card-order {
+    order: 1;
   }
 }

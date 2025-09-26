@@ -94,3 +94,14 @@ export interface AddSeniorRequestBody {
   userId: string;
   password: string;
 }
+
+// 이벤트 상세 정보 응답 타입 (예시)
+export interface EventDetailResponseBody {
+  uuid: string;
+  eventType: string; // 예: "낙상 감지", "비상 호출"
+  monitorMode: string; 
+  timestamp: string; // 예: "2025-09-26T12:30:00Z"
+  base64Image : string; // 이벤트와 관련된 이미지 (base64 인코딩)
+  isRead: boolean;
+  isDismissed: boolean;
+}

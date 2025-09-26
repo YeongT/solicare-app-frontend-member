@@ -116,7 +116,43 @@
 }
 
 @media (max-width: 800px) {
+  .landing {
+    padding: 1rem 1rem;
+  }
   .landing-features {
     grid-template-columns: 1fr;
+  }
+
+  .landing-hero {
+    padding: 2rem 1.5rem 2rem 1.5rem;
+  }
+
+  .landing-badge {
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .landing-title {
+    font-size: clamp(15px, 6vw, 28px);
+    margin-bottom: 2rem;
+  }
+  .landing-subtitle {
+    font-size: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .landing-actions {
+    flex-direction: row;
+    gap: 1rem;
+  }
+  
+  .cta {
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+    border-radius: 10px;
+    padding: 0.7rem 1.2rem;
+    display: inline-block;
+    transition: all 0.3s ease;
   }
 }

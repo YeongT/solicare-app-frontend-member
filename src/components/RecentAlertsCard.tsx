@@ -5,18 +5,19 @@ import { SeniorDetailResponseBody, SeniorAlert } from '../types/api';
 
 interface RecentAlertsCardProps {
   seniorDetail: SeniorDetailResponseBody;
+  className?: string;
 }
 
 const RecentAlertsCard: React.FC<RecentAlertsCardProps> = ({
   seniorDetail,
+  className,
 }) => {
   const [alerts, setAlerts] = useState<SeniorAlert[]>([]);
-  // const [isLoading, setIsLoading] = useState(false);
 
   // 초기 데이터 생성
   useEffect(() => {
     if (seniorDetail && seniorDetail.alerts.length > 0) {
-      setAlerts(seniorDetail.alerts.reverse());
+      setAlerts(seniorDetail.alerts); // reverse() 뺌
       return;
     }
     const initialData: SeniorAlert[] = [
@@ -46,8 +47,18 @@ const RecentAlertsCard: React.FC<RecentAlertsCardProps> = ({
   const unreadCount = alerts.filter((a) => !a.isRead).length;
   const badgeCount = unreadCount > 99 ? '99+' : unreadCount;
 
+  // eventType을 한글 메시지로 매핑
+  const eventTypeMap: { [key: string]: string } = {
+    FALL_DETECTED: '낙상 감지',
+    CAMERA_BATTERY_LOW: '카메라 배터리 부족',
+    CAMERA_DISCONNECTED: '카메라 연결 끊김',
+    WEARABLE_BATTERY_LOW: '웨어러블 기기 배터리 부족',
+    WEARABLE_DISCONNECTED: '웨어러블 기기 연결 끊김',
+    INACTIVITY_ALERT: '장시간 움직임 없음',
+  };
+
   return (
-    <div className="recent-alerts-card">
+    <div className={`recent-alerts-card${className ? ` ${className}` : ''}`}>
       <div
         className="card-header"
         style={{ display: 'flex', alignItems: 'center', gap: 8 }}
@@ -56,15 +67,19 @@ const RecentAlertsCard: React.FC<RecentAlertsCardProps> = ({
         {unreadCount > 0 && <span className="alert-badge">{badgeCount}</span>}
       </div>
       <div className="alerts-list">
-        {alerts.map((alert, index) => (
-          <div
-            key={index}
-            className={`alert-item${alert.isRead ? ' alert-read' : ' alert-unread'}`}
-          >
-            <div className="alert-type">{alert.eventType}</div>
-            <div className="alert-timestamp">{alert.timestamp}</div>
-          </div>
-        ))}
+        {alerts.map((alert, index) => {
+          // eventType이 매핑에 있으면 한글 메시지, 없으면 원래 값
+          const eventTypeText = eventTypeMap[alert.eventType] || alert.eventType;
+          return (
+            <div
+              key={index}
+              className={`alert-item${alert.isRead ? ' alert-read' : ' alert-unread'}`}
+            >
+              <div className="alert-type">{eventTypeText}</div>
+              <div className="alert-timestamp">{alert.timestamp}</div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
