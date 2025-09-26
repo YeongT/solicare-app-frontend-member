@@ -47,6 +47,16 @@ const RecentAlertsCard: React.FC<RecentAlertsCardProps> = ({
   const unreadCount = alerts.filter((a) => !a.isRead).length;
   const badgeCount = unreadCount > 99 ? '99+' : unreadCount;
 
+  // eventType을 한글 메시지로 매핑
+  const eventTypeMap: { [key: string]: string } = {
+    FALL_DETECTED: '낙상이 감지되었습니다.',
+    CAMERA_BATTERY_LOW: '카메라 배터리가 부족합니다.',
+    CAMERA_DISCONNECTED: '카메라 연결이 끊어졌습니다.',
+    WEARABLE_BATTERY_LOW: '웨어러블 기기 배터리가 부족합니다.',
+    WEARABLE_DISCONNECTED: '웨어러블 기기 연결이 끊어졌습니다.',
+    INACTIVITY_ALERT: '장시간 움직임이 감지되지 않습니다.',
+  };
+
   return (
     <div className={`recent-alerts-card${className ? ` ${className}` : ''}`}>
       <div
@@ -57,15 +67,19 @@ const RecentAlertsCard: React.FC<RecentAlertsCardProps> = ({
         {unreadCount > 0 && <span className="alert-badge">{badgeCount}</span>}
       </div>
       <div className="alerts-list">
-        {alerts.map((alert, index) => (
-          <div
-            key={index}
-            className={`alert-item${alert.isRead ? ' alert-read' : ' alert-unread'}`}
-          >
-            <div className="alert-type">{alert.eventType}</div>
-            <div className="alert-timestamp">{alert.timestamp}</div>
-          </div>
-        ))}
+        {alerts.map((alert, index) => {
+          // eventType이 매핑에 있으면 한글 메시지, 없으면 원래 값
+          const eventTypeText = eventTypeMap[alert.eventType] || alert.eventType;
+          return (
+            <div
+              key={index}
+              className={`alert-item${alert.isRead ? ' alert-read' : ' alert-unread'}`}
+            >
+              <div className="alert-type">{eventTypeText}</div>
+              <div className="alert-timestamp">{alert.timestamp}</div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

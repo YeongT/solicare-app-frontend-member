@@ -1,3 +1,22 @@
+@media (max-width: 560px) {
+  .recent-alerts-card {
+    padding: 1rem;
+    font-size: 0.92rem;
+  }
+  .recent-alerts-card h3 {
+    font-size: 1.05rem;
+  }
+  .alert-type {
+    font-size: 0.98rem;
+  }
+  .alert-timestamp {
+    font-size: 0.85rem;
+  }
+  .alert-badge {
+    font-size: 0.85rem;
+    padding: 0.1em 0.5em;
+  }
+}
 .recent-alerts-card {
   background-color: white;
   border-radius: 12px;

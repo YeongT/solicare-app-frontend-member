@@ -161,41 +161,17 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({
           <span className="dropdown-arrow">{isDropdownOpen ? '▲' : '▼'}</span>
         </h3>
 
-        {selectedSenior && seniorDetail && !isLoading && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              marginLeft: 16,
-            }}
-          >
-            <span
-              style={{
-                fontSize: '1rem',
-                color: '#666',
-                position: 'relative',
-                top: '-2px',
-              }}
-            >
-              모니터링 활성화
-            </span>
+        {selectedSenior && seniorDetail && (
+          <div className="monitoring-toggle-row">
+            <span className="monitoring-label">모니터링 활성화</span>
             <button
-              className="monitoring-toggle-btn"
+              className={`monitoring-toggle-btn${isMonitored ? ' on' : ''}`}
               style={{
-                padding: '0.3em 1.2em',
-                borderRadius: 20,
-                border: 'none',
-                background: isMonitored ? '#4ade80' : '#e5e7eb',
-                color: isMonitored ? '#fff' : '#888',
-                fontWeight: 600,
-                fontSize: '1rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                position: 'relative',
-                top: '-2px',
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                opacity: isLoading ? 0.6 : 1,
               }}
-              onClick={onToggleMonitoring}
+              onClick={isLoading ? undefined : onToggleMonitoring}
+              disabled={isLoading}
             >
               {isMonitored ? 'ON' : 'OFF'}
             </button>
